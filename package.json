@@ -1,9 +1,9 @@
 {
-  "name": "dapptools-template",
-  "author": "Georgios Konstantopoulos",
-  "license": "Unlicense",
+  "name": "CityDAO Citizen NFTs",
+  "author": "Odysseas Lamtzidis",
+  "license": "MIT",
   "version": "1.0.0",
-  "description": "A template for building dapptools projects",
+  "description": "A smart contract that generates NFTs for CitiDAO's citizens",
   "files": [
     "*.sol"
   ],
