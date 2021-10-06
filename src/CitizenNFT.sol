@@ -108,9 +108,9 @@ contract Citizen is ERC721, Ownable {
                 firstCitizen[msg.sender] = frackingClosedSourceContract
                     .balanceOf(msg.sender, BEHEADED_CITIZEN);
             }
-            firstCitizen[msg.sender].sub(1);
-            issueCitizenship(_tokenType);
+                firstCitizen[msg.sender].sub(1);
         }
+        issueCitizenship(_tokenType);
     }
 
     function citizenshipVerification(uint256 _citizenshipId)
