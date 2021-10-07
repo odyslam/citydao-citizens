@@ -29,9 +29,12 @@ contract NewCityDAOCitizen is CitizenTest {
          bob.applyForRefugeeStatus(34);
     }
 
-    function testFailGetOpenSeaFoundingCitizenNFT() public{}
+    function testFailGetOpenSeaFoundingCitizenNFT() public{
+        bob.applyForRefugeeStatus(10045);
+    }
 
-    function testFailGetOpenSeaFirstCitizenNFT() public{}
+    function testFailGetOpenSeaFirstCitizenNFT() public{
+        bob.applyForRefugeeStatus(0);}
 }
 contract existingCityDAOCitizen is CitizenTest {
 
