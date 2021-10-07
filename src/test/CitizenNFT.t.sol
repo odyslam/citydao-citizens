@@ -18,7 +18,11 @@ contract NewCityDAOCitizen is CitizenTest {
     }
 
     function testTokenURI() public {
-
+        payable(address(bob)).transfer(1 ether);
+        uint256 token1;
+        token1 = bob.onlineApplicationForCitizenship(250000000000000000);
+        string memory meta = citizenNFT.tokenURI(token1);
+        emit log(meta);
     }
 
     function testFailGetOpenSeaCitizenNFT() public {}

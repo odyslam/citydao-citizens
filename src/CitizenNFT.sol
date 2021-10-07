@@ -186,7 +186,7 @@ contract CitizenNFT is ERC721, Ownable {
                         '", ',
                         '"description" : ',
                         '"A CityDAO citizen. CityDAO is putting land on chain, starting with Wyoming.",',
-                        '"image": "ipfs://,',
+                        '"image": "ipfs://',
                         imageHash,
                         '"'
                         "}"
@@ -194,6 +194,6 @@ contract CitizenNFT is ERC721, Ownable {
                 )
             )
         );
-        return string(abi.encodePacked("data:application/json,base64", json));
+        return string(abi.encodePacked("data:application/json;base64,", json));
     }
 }
