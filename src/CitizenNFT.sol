@@ -16,14 +16,10 @@ contract Citizen is ERC721, Ownable {
     uint256 private FOUNDING_NFT_MAX = 50;
     uint256 private constant FIRST_AMONGST_EQUALS_CITIZEN = 1;
     uint256 public CITIZENSHIP_STAMP_COST_WEI = 250000000000000000;
-    address private constant FORBIDDEN_ADDRESS =
-        0x495f947276749Ce646f68AC8c248420045cb7b5e;
-    uint256 private constant JAILED_CITIZENS =
-        23487195805935260354348650824724952235377320432154855752878351301067508033245;
-    uint256 private constant CITIZENS_FACING_GUILLOTINE =
-        23487195805935260354348650824724952235377320432154855752878351298868484767794;
-    uint256 private constant BEHEADED_CITIZEN =
-        23487195805935260354348650824724952235377320432154855752878351297768973139969;
+    address private forbiddenAddress;
+    uint256 private jailedCitizens;
+    uint256 private citizensFacingGuillotine;
+    uint256 private beheadedCitizen;
     uint256 private constant CITIZEN_NFT_ID = 42;
     uint256 private constant FOUNDING_NFT_ID = 69;
     uint256 private constant FIRST_NFT_ID = 7;
@@ -55,8 +51,12 @@ contract Citizen is ERC721, Ownable {
         FOUNDING_NFT_MAX = _max;
         emit CitizenLegislatureChanged("foundingCitizenNftMax",_max);
     }
-    constructor() Ownable() ERC721("CityDAO Citizen", "CTZN") {
-        frackingClosedSourceContract = FrackingClosedSourceContract(FORBIDDEN_ADDRESS);
+    constructor(address _forbiddenAddress, _jailedCitizens, _citizensFacingGuillotine, _beheadedCitizen) Ownable() ERC721("CityDAO Citizen", "CTZN") {
+        frackingClosedSourceContract = FrackingClosedSourceContract(forbiddenAddress);
+        forbiddenAddress = _forbiddenAddress;
+        jailedCitizens = _jailedCitizens;
+        citizensFacingGuillotine = _citizensFacingGuillotine;
+        beheadedCitizen = _beheadedCitizen;
     }
 
     function onlineApplicationForCitizenship() public payable {
@@ -93,20 +93,20 @@ contract Citizen is ERC721, Ownable {
             if (citizens[msg.sender] == 0) {
                 citizens[msg.sender] = frackingClosedSourceContract.balanceOf(
                     msg.sender,
-                    JAILED_CITIZENS
+                    jailedCitizens
                 );
             }
             citizens[msg.sender].sub(1);
         } else if (_tokenType == FOUNDING_NFT_ID) {
             if (foundingCitizens[msg.sender] == 0) {
                 foundingCitizens[msg.sender] = frackingClosedSourceContract
-                    .balanceOf(msg.sender, CITIZENS_FACING_GUILLOTINE);
+                    .balanceOf(msg.sender, citizensFacingGuillotine);
             }
             foundingCitizens[msg.sender].sub(1);
         } else if (_tokenType == FIRST_NFT_ID) {
             if (firstCitizen[msg.sender] == 0) {
                 firstCitizen[msg.sender] = frackingClosedSourceContract
-                    .balanceOf(msg.sender, BEHEADED_CITIZEN);
+                    .balanceOf(msg.sender, beheadedCitizen);
             }
                 firstCitizen[msg.sender].sub(1);
         }
