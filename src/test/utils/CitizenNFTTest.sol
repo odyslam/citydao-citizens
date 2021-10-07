@@ -19,9 +19,11 @@ contract User is ERC721Holder {
     function applyForRefugeeStatus(uint256 _tokenId) public {
          citizenNFT.applyForRefugeeStatus(_tokenId);
      }
-    function onlineApplicationForCitizenship() public {
-        citizenNFT.onlineApplicationForCitizenship();
+    function onlineApplicationForCitizenship(uint256 _weiAmmount) public returns(uint256){
+        return citizenNFT.onlineApplicationForCitizenship{value:_weiAmmount}();
     }
+
+    receive() external payable {}
 }
 
 /// @notice Helper test contract that sets up the testing suite.

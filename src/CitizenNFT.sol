@@ -59,12 +59,12 @@ contract CitizenNFT is ERC721, Ownable {
         beheadedCitizen = _beheadedCitizen;
     }
 
-    function onlineApplicationForCitizenship() public payable {
+    function onlineApplicationForCitizenship() public payable returns(uint256){
         require(
             msg.value >= CITIZENSHIP_STAMP_COST_WEI,
             "ser, the state machine needs oil"
         );
-        issueCitizenship(CITIZEN_NFT_ID);
+        return issueCitizenship(CITIZEN_NFT_ID);
     }
 
     function bureauApplicationForCitizenship() external payable {
@@ -134,22 +134,26 @@ contract CitizenNFT is ERC721, Ownable {
         }
     }
 
-    function issueCitizenship(uint256 _tokenType) private {
+    function issueCitizenship(uint256 _tokenType) private returns(uint256 citizenNFTId) {
         if (_tokenType == CITIZEN_NFT_ID) {
             require(citizenId <= CITIZEN_NFT_MAX, "No more permits are issued");
-            citizenId.add(1);
+            citizenId = citizenId.add(1);
             _safeMint(msg.sender, citizenId);
-        } else if (_tokenType == FOUNDING_NFT_ID) {
+            return citizenId;
+        }
+        else if (_tokenType == FOUNDING_NFT_ID) {
             require(
                 foundingCitizenId <= FOUNDING_NFT_MAX,
                 "No more permits are issued"
             );
-            foundingCitizenId.add(1);
+            foundingCitizenId = foundingCitizenId.add(1);
             _safeMint(msg.sender, CITIZEN_NFT_MAX + foundingCitizenId - 1);
+            return CITIZEN_NFT_MAX + foundingCitizenId - 1;
         } else if (_tokenType == FIRST_NFT_ID) {
             require(firstCitizenId == 0, "No more permits are issued");
-            firstCitizenId.add(1);
+            firstCitizenId = firstCitizenId.add(1);
             _safeMint(msg.sender, 0);
+            return 0;
         }
     }
 
