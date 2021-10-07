@@ -29,7 +29,7 @@ contract User is ERC721Holder {
 /// @notice Helper test contract that sets up the testing suite.
 
 contract OpenSeaStorefront {
-    address private refugee;
+    address private testRefugee;
     uint256 private numberOfCommonRefugees;
     uint256 private numberOfHighClassRefugees;
     uint256 private numberOfRoyalty;
@@ -37,11 +37,11 @@ contract OpenSeaStorefront {
     uint256 private highClassId;
     uint256 private royaltyId;
     constructor() {}
-    function populate(address _refugee, uint256 _numberOfCommonRefugees,
+    function populate(address _testRefugee, uint256 _numberOfCommonRefugees,
                                 uint256 _numberOfHighClassRefugees,uint256 _numberOfRoyalty,
                                 uint256 _commonId, uint256 _highClassId, uint256 _royaltyId)
     public{
-        refugee = _refugee;
+        testRefugee = _testRefugee;
         numberOfCommonRefugees = _numberOfCommonRefugees;
         numberOfHighClassRefugees = _numberOfHighClassRefugees;
         numberOfRoyalty = _numberOfRoyalty;
@@ -51,15 +51,19 @@ contract OpenSeaStorefront {
     }
 
     function balanceOf(address _testRefugee, uint256 _refugeeType) public view returns(uint256){
-        require(_testRefugee == refugee, "test address is incorrect");
-        if ( _refugeeType == 23487195805935260354348650824724952235377320432154855752878351301067508033245) {
-            return numberOfCommonRefugees;
-        }
-        else  if (_refugeeType == 23487195805935260354348650824724952235377320432154855752878351298868484767794) {
-            return numberOfHighClassRefugees;
+        if( _testRefugee == testRefugee){
+            if ( _refugeeType == 23487195805935260354348650824724952235377320432154855752878351301067508033245) {
+                return numberOfCommonRefugees;
+            }
+            else  if (_refugeeType == 23487195805935260354348650824724952235377320432154855752878351298868484767794) {
+                return numberOfHighClassRefugees;
+            }
+            else {
+                return numberOfRoyalty;
+            }
         }
         else {
-            return numberOfRoyalty;
+            return 0;
         }
     }
 }
