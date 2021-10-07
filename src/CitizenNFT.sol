@@ -10,7 +10,7 @@ interface FrackingClosedSourceContract {
     function balanceOf(address, uint256) external payable returns (uint256);
 }
 
-contract Citizen is ERC721, Ownable {
+contract CitizenNFT is ERC721, Ownable {
     using SafeMath for uint256;
     uint256 private CITIZEN_NFT_MAX = 10000;
     uint256 private FOUNDING_NFT_MAX = 50;
@@ -51,7 +51,7 @@ contract Citizen is ERC721, Ownable {
         FOUNDING_NFT_MAX = _max;
         emit CitizenLegislatureChanged("foundingCitizenNftMax",_max);
     }
-    constructor(address _forbiddenAddress, _jailedCitizens, _citizensFacingGuillotine, _beheadedCitizen) Ownable() ERC721("CityDAO Citizen", "CTZN") {
+    constructor(address _forbiddenAddress, uint256 _jailedCitizens, uint256 _citizensFacingGuillotine, uint256 _beheadedCitizen) Ownable() ERC721("CityDAO Citizen", "CTZN") {
         frackingClosedSourceContract = FrackingClosedSourceContract(forbiddenAddress);
         forbiddenAddress = _forbiddenAddress;
         jailedCitizens = _jailedCitizens;
@@ -84,10 +84,11 @@ contract Citizen is ERC721, Ownable {
     }
 
     fallback() external payable {
-        require(msg.data.length == 0);
         emit LogEthDeposit(msg.sender);
     }
-
+    receive() external payable {
+        emit LogEthDeposit(msg.sender);
+    }
     function applyForRefugeeStatus(uint256 _tokenType) public {
         if (_tokenType == CITIZEN_NFT_ID) {
             if (citizens[msg.sender] == 0) {
