@@ -110,6 +110,9 @@ contract Citizen is ERC721, Ownable {
             }
                 firstCitizen[msg.sender].sub(1);
         }
+        else {
+            revert("Application denied. Please follow us");
+        }
         issueCitizenship(_tokenType);
     }
 
