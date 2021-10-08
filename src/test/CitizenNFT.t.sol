@@ -40,13 +40,13 @@ contract NewCityDAOCitizen is CitizenTest {
 contract existingCityDAOCitizen is CitizenTest {
     uint256 citizenIdCounter;
 
-    function testGetCitizenNFT() public{
-        uint256 token1;
-        for (citizenIdCounter=1;citizenIdCounter<=10000;citizenIdCounter=citizenIdCounter+1){
-            token1 = alice.applyForRefugeeStatus(citizenNFTInternalId);
-            assertEq(address(alice), citizenNFT.ownerOf(token1));
-        }
-    }
+//    function testGetCitizenNFT() public{
+//        uint256 token1;
+//        for (citizenIdCounter=1;citizenIdCounter<=10000;citizenIdCounter=citizenIdCounter+1){
+//            token1 = alice.applyForRefugeeStatus(citizenNFTInternalId);
+//            assertEq(address(alice), citizenNFT.ownerOf(token1));
+//        }
+//    }
     function testGetFoundingCitizenNFT() public {
         uint256 token1;
         for (citizenIdCounter=1001; citizenIdCounter <= 1050;citizenIdCounter=citizenIdCounter+1){
@@ -58,5 +58,28 @@ contract existingCityDAOCitizen is CitizenTest {
         uint256 token1;
         token1 = alice.applyForRefugeeStatus(firstCitizenNFTInternalId);
         assertEq(address(alice), citizenNFT.ownerOf(token1));
+    }
+
+    function testFailGetMoreCitizenNFTs() public {
+        User seneca = new User(citizenNFT);
+        openSeaStorefront.populate(address(seneca), 10, 45, 1, openseaCitizenNFTId, openseaFoundingCitizenNFTId, openseaFirstCitizenNFTId);
+        uint256 counter = 0;
+        uint256 tokenId;
+        for(uint256 i=0;i<=20;i=i+1) {
+            tokenId = seneca.applyForRefugeeStatus(citizenNFTInternalId);
+        }
+    }
+}
+
+contract Legislate is CitizenTest {
+
+    function testOwnerChangeCitizenCost(uint256 _weiAmmount) public {
+        odys.legislateCostOfEntry(_weiAmmount);
+        assertEq(citizenNFT.inquireCostOfEntry(), _weiAmmount);
+    }
+
+    function testOwnerChangeCitizensNumbe(uint256 _housingNumber) public {
+        odys.legislateForHousing(_housingNumber);
+        assertEq(citizenNFT.inquireHousingNumbers(), _housingNumber);
     }
 }

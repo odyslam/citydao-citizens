@@ -23,6 +23,13 @@ contract User is ERC721Holder, DSTest {
         return citizenNFT.onlineApplicationForCitizenship{value:_weiAmmount}();
     }
 
+   function legislateCostOfEntry(uint256 _weiAmmount) public {
+       citizenNFT.legislateCostOfEntry(_weiAmmount);
+   }
+   function legislateForHousing(uint256 _max) public {
+       citizenNFT.legislateForHousing(_max);
+   }
+
     receive() external payable {}
 }
 
@@ -72,7 +79,7 @@ contract CitizenTest is DSTest {
 
     // contracts
     CitizenNFT internal citizenNFT;
-
+    OpenSeaStorefront internal openSeaStorefront;
     // users
     User internal alice;
     User internal bob;
@@ -91,7 +98,7 @@ contract CitizenTest is DSTest {
    uint256 firstCitizenNFTInternalId = 7;
 
     function setUp() public virtual {
-        OpenSeaStorefront openSeaStorefront = new OpenSeaStorefront();
+        openSeaStorefront = new OpenSeaStorefront();
         citizenNFT = new CitizenNFT(address(openSeaStorefront), openseaCitizenNFTId, openseaFoundingCitizenNFTId, openseaFirstCitizenNFTId );
         bob = new User(citizenNFT);
         alice = new User(citizenNFT);
