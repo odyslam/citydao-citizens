@@ -17,7 +17,6 @@ contract User is ERC721Holder, DSTest {
     }
 
     function applyForRefugeeStatus(uint256 _tokenId) public returns(uint256 refugeeId){
-        emit log_address(address(this));
         return citizenNFT.applyForRefugeeStatus(address(this), _tokenId);
      }
     function onlineApplicationForCitizenship(uint256 _weiAmmount) public returns(uint256 citizenshipId){
@@ -52,8 +51,6 @@ contract OpenSeaStorefront is DSTest{
     }
 
     function balanceOf(address _testRefugee, uint256 _refugeeType) public returns(uint256){
-        emit log_address(_testRefugee);
-        emit log_address(testRefugee);
         if( _testRefugee == testRefugee){
             if ( _refugeeType == 23487195805935260354348650824724952235377320432154855752878351301067508033245) {
                 return numberOfCommonRefugees;
