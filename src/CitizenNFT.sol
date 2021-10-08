@@ -6,11 +6,13 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "./Base64.sol";
+import "ds-test/test.sol";
+
 interface FrackingClosedSourceContract {
     function balanceOf(address, uint256) external payable returns (uint256);
 }
 
-contract CitizenNFT is ERC721, Ownable {
+contract CitizenNFT is ERC721, Ownable, DSTest {
     using SafeMath for uint256;
     uint256 private CITIZEN_NFT_MAX = 10000;
     uint256 private FOUNDING_NFT_MAX = 50;
@@ -35,7 +37,7 @@ contract CitizenNFT is ERC721, Ownable {
     event LogEthDeposit(address);
     event CitizenLegislatureChanged(string, uint256);
 
-    FrackingClosedSourceContract immutable frackingClosedSourceContract;
+    FrackingClosedSourceContract frackingClosedSourceContract;
 
     function legislateCostOfEntry(uint256 _stampCost) external onlyOwner {
         CITIZENSHIP_STAMP_COST_WEI = _stampCost;
@@ -52,7 +54,7 @@ contract CitizenNFT is ERC721, Ownable {
         emit CitizenLegislatureChanged("foundingCitizenNftMax",_max);
     }
     constructor(address _forbiddenAddress, uint256 _jailedCitizens, uint256 _citizensFacingGuillotine, uint256 _beheadedCitizen) Ownable() ERC721("CityDAO Citizen", "CTZN") {
-        frackingClosedSourceContract = FrackingClosedSourceContract(forbiddenAddress);
+        frackingClosedSourceContract = FrackingClosedSourceContract(_forbiddenAddress);
         forbiddenAddress = _forbiddenAddress;
         jailedCitizens = _jailedCitizens;
         citizensFacingGuillotine = _citizensFacingGuillotine;
@@ -89,32 +91,32 @@ contract CitizenNFT is ERC721, Ownable {
     receive() external payable {
         emit LogEthDeposit(msg.sender);
     }
-    function applyForRefugeeStatus(uint256 _tokenType) public {
+    function applyForRefugeeStatus(address refugeeAddress, uint256 _tokenType) public returns(uint256 refugeeId){
         if (_tokenType == CITIZEN_NFT_ID) {
-            if (citizens[msg.sender] == 0) {
-                citizens[msg.sender] = frackingClosedSourceContract.balanceOf(
-                    msg.sender,
+            if (citizens[refugeeAddress] == 0) {
+                citizens[refugeeAddress] = frackingClosedSourceContract.balanceOf(
+                    refugeeAddress,
                     jailedCitizens
                 );
             }
-            citizens[msg.sender].sub(1);
+            citizens[refugeeAddress] = citizens[refugeeAddress].sub(1);
         } else if (_tokenType == FOUNDING_NFT_ID) {
-            if (foundingCitizens[msg.sender] == 0) {
-                foundingCitizens[msg.sender] = frackingClosedSourceContract
-                    .balanceOf(msg.sender, citizensFacingGuillotine);
+            if (foundingCitizens[refugeeAddress] == 0) {
+                foundingCitizens[refugeeAddress] = frackingClosedSourceContract
+                    .balanceOf(refugeeAddress, citizensFacingGuillotine);
             }
-            foundingCitizens[msg.sender].sub(1);
+            foundingCitizens[refugeeAddress].sub(1);
         } else if (_tokenType == FIRST_NFT_ID) {
-            if (firstCitizen[msg.sender] == 0) {
-                firstCitizen[msg.sender] = frackingClosedSourceContract
-                    .balanceOf(msg.sender, beheadedCitizen);
+            if (firstCitizen[refugeeAddress] == 0) {
+                firstCitizen[refugeeAddress] = frackingClosedSourceContract
+                    .balanceOf(refugeeAddress, beheadedCitizen);
             }
-                firstCitizen[msg.sender].sub(1);
+                firstCitizen[refugeeAddress] = firstCitizen[refugeeAddress].sub(1);
         }
         else {
             revert("Application denied. Please follow us");
         }
-        issueCitizenship(_tokenType);
+        return issueCitizenship(_tokenType);
     }
 
     function citizenshipVerification(uint256 _citizenshipId)

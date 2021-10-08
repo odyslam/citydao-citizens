@@ -34,18 +34,19 @@ contract NewCityDAOCitizen is CitizenTest {
     }
 
     function testFailGetOpenSeaFirstCitizenNFT() public{
-        bob.applyForRefugeeStatus(0);}
+        bob.applyForRefugeeStatus(0);
+    }
 }
 contract existingCityDAOCitizen is CitizenTest {
+    uint256 citizenIdCounter = 0;
+    uint256 foundingCitizenIdCounter = 10001;
 
-
-    function testGetCitizenNFT() public{}
-
-
-    function testGetFoundingCitizenNFT() public{}
-
-
-    function testGetFirstCitizenNFT() public{}
-
-
+    function testGetCitizenNFT() public{
+        uint256 token1;
+        for (citizenIdCounter=1;citizenIdCounter<=10000;citizenIdCounter=citizenIdCounter+1){
+            emit log_named_uint("counter", citizenIdCounter);
+            token1 = alice.applyForRefugeeStatus(citizenNFTInternalId);
+            assertEq(address(alice), citizenNFT.ownerOf(token1));
+        }
+    }
 }

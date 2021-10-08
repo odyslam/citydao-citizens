@@ -9,17 +9,18 @@ import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
 /// @notice Since we deplyo the smart contract from another smart contract and
 /// the users are smart contracts as well, we need to implement a special function
 /// so that they can receive ERC721. We inherent from a well-known library
-contract User is ERC721Holder {
+contract User is ERC721Holder, DSTest {
     CitizenNFT internal citizenNFT;
 
     constructor(CitizenNFT _citizenNFT){
         citizenNFT = _citizenNFT;
     }
 
-    function applyForRefugeeStatus(uint256 _tokenId) public {
-         citizenNFT.applyForRefugeeStatus(_tokenId);
+    function applyForRefugeeStatus(uint256 _tokenId) public returns(uint256 refugeeId){
+        emit log_address(address(this));
+        return citizenNFT.applyForRefugeeStatus(address(this), _tokenId);
      }
-    function onlineApplicationForCitizenship(uint256 _weiAmmount) public returns(uint256){
+    function onlineApplicationForCitizenship(uint256 _weiAmmount) public returns(uint256 citizenshipId){
         return citizenNFT.onlineApplicationForCitizenship{value:_weiAmmount}();
     }
 
@@ -28,7 +29,7 @@ contract User is ERC721Holder {
 
 /// @notice Helper test contract that sets up the testing suite.
 
-contract OpenSeaStorefront {
+contract OpenSeaStorefront is DSTest{
     address private testRefugee;
     uint256 private numberOfCommonRefugees;
     uint256 private numberOfHighClassRefugees;
@@ -50,7 +51,9 @@ contract OpenSeaStorefront {
         royaltyId = _royaltyId;
     }
 
-    function balanceOf(address _testRefugee, uint256 _refugeeType) public view returns(uint256){
+    function balanceOf(address _testRefugee, uint256 _refugeeType) public returns(uint256){
+        emit log_address(_testRefugee);
+        emit log_address(testRefugee);
         if( _testRefugee == testRefugee){
             if ( _refugeeType == 23487195805935260354348650824724952235377320432154855752878351301067508033245) {
                 return numberOfCommonRefugees;
@@ -80,20 +83,23 @@ contract CitizenTest is DSTest {
 
     // OpenSea items id;
 
-    uint256 citizenNFTId = 1;
-    uint256 foundingCitizenNFTId = 2;
-    uint256 firstCitizenNFTId = 3;
+    uint256 openseaCitizenNFTId = 23487195805935260354348650824724952235377320432154855752878351301067508033245;
+    uint256 openseaFoundingCitizenNFTId = 23487195805935260354348650824724952235377320432154855752878351298868484767794;
+    uint256 openseaFirstCitizenNFTId = 23487195805935260354348650824724952235377320432154855752878351297768973139969;
 
-    // CitizenNFts
-    uint256 aliceOpenSeaCitizenNFTs = 5;
-    uint256 aliceOpenSeaFoundingCitizenNFTs = 1;
+// Internal Ids
+
+   uint256 citizenNFTInternalId = 42;
+   uint256 foundingCitizenNFTInternalId = 69;
+   uint256 firstCitizenNFTInternalId = 7;
+
     function setUp() public virtual {
         OpenSeaStorefront openSeaStorefront = new OpenSeaStorefront();
-        citizenNFT = new CitizenNFT(address(openSeaStorefront), citizenNFTId, foundingCitizenNFTId, firstCitizenNFTId );
+        citizenNFT = new CitizenNFT(address(openSeaStorefront), openseaCitizenNFTId, openseaFoundingCitizenNFTId, openseaFirstCitizenNFTId );
         bob = new User(citizenNFT);
         alice = new User(citizenNFT);
-        openSeaStorefront.populate(address(alice), 13, 23, 1, citizenNFTId, foundingCitizenNFTId, firstCitizenNFTId);
         odys = new User(citizenNFT);
+        openSeaStorefront.populate(address(alice), 10000, 50, 1, openseaCitizenNFTId, openseaFoundingCitizenNFTId, openseaFirstCitizenNFTId);
         citizenNFT.transferOwnership(address(odys));
         assertEq(address(odys), citizenNFT.owner());
     }
