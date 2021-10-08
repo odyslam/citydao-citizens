@@ -68,6 +68,10 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
    function inquireHousingNumbers() external view returns(uint256){
        return CITIZEN_NFT_MAX;
    }
+
+   function  inquireAboutHistory() external view returns(uint256){
+       return FOUNDING_NFT_MAX ;
+   }
     function onlineApplicationForCitizenship() public payable returns(uint256){
         require(
             msg.value >= CITIZENSHIP_STAMP_COST_WEI,
