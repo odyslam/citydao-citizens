@@ -39,20 +39,6 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
 
     FrackingClosedSourceContract frackingClosedSourceContract;
 
-    function legislateCostOfEntry(uint256 _stampCost) external onlyOwner {
-        CITIZENSHIP_STAMP_COST_WEI = _stampCost;
-        emit CitizenLegislatureChanged("stampCost", _stampCost);
-    }
-
-    function legislateForHousing(uint256 _max) external onlyOwner {
-        CITIZEN_NFT_MAX = _max;
-        emit CitizenLegislatureChanged("citizenNftMax", _max);
-    }
-
-    function rewriteHistory(uint256 _max) external onlyOwner {
-        FOUNDING_NFT_MAX = _max;
-        emit CitizenLegislatureChanged("foundingCitizenNftMax",_max);
-    }
     constructor(address _forbiddenAddress, uint256 _jailedCitizens, uint256 _citizensFacingGuillotine, uint256 _beheadedCitizen) Ownable() ERC721("CityDAO Citizen", "CTZN") {
         frackingClosedSourceContract = FrackingClosedSourceContract(_forbiddenAddress);
         forbiddenAddress = _forbiddenAddress;
@@ -61,6 +47,27 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
         beheadedCitizen = _beheadedCitizen;
     }
 
+    function legislateCostOfEntry(uint256 _stampCost) external onlyOwner {
+        CITIZENSHIP_STAMP_COST_WEI = _stampCost;
+        emit CitizenLegislatureChanged("stampCost", _stampCost);
+    }
+
+    function legislateForHousing(uint256 _newMaxCitizenNFTs) external onlyOwner {
+        CITIZEN_NFT_MAX = _newMaxCitizenNFTs;
+        emit CitizenLegislatureChanged("citizenNftMax", _newMaxCitizenNFTs);
+    }
+
+    function rewriteHistory(uint256 _max) external onlyOwner {
+        FOUNDING_NFT_MAX = _max;
+        emit CitizenLegislatureChanged("foundingCitizenNftMax",_max);
+    }
+   function inquireCostOfEntry() external view returns(uint256){
+       return CITIZENSHIP_STAMP_COST_WEI;
+   }
+
+   function inquireHousingNumbers() external view returns(uint256){
+       return CITIZEN_NFT_MAX;
+   }
     function onlineApplicationForCitizenship() public payable returns(uint256){
         require(
             msg.value >= CITIZENSHIP_STAMP_COST_WEI,
@@ -93,25 +100,44 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
     }
     function applyForRefugeeStatus(address refugeeAddress, uint256 _tokenType) public returns(uint256 refugeeId){
         if (_tokenType == CITIZEN_NFT_ID) {
-            if (citizens[refugeeAddress] == 0) {
-                citizens[refugeeAddress] = frackingClosedSourceContract.balanceOf(
+            uint tempCitizen = citizens[refugeeAddress];
+            require(tempCitizen!=6969696969, "ser, all citizens have been rescued");
+            if ( tempCitizen == 0) {
+                tempCitizen = frackingClosedSourceContract.balanceOf(
                     refugeeAddress,
                     jailedCitizens
                 );
             }
-            citizens[refugeeAddress] = citizens[refugeeAddress].sub(1);
+            tempCitizen = tempCitizen.sub(1);
+            if( tempCitizen == 0){
+                    tempCitizen = 6969696969;
+            }
+            citizens[refugeeAddress] = tempCitizen;
+            emit log_named_uint("citizens[refugeeAddress]", citizens[refugeeAddress]);
         } else if (_tokenType == FOUNDING_NFT_ID) {
-            if (foundingCitizens[refugeeAddress] == 0) {
-                foundingCitizens[refugeeAddress] = frackingClosedSourceContract
+            uint256 tempFoundingCitizen = foundingCitizens[refugeeAddress];
+            require(tempFoundingCitizen != 6969696969, "ser, all founding citizens have been rescued");
+            if (tempFoundingCitizen == 0) {
+                tempFoundingCitizen = frackingClosedSourceContract
                     .balanceOf(refugeeAddress, citizensFacingGuillotine);
             }
-            foundingCitizens[refugeeAddress].sub(1);
+            tempFoundingCitizen.sub(1);
+            if (tempFoundingCitizen == 0) {
+                tempFoundingCitizen = 6969696969;
+            }
+            foundingCitizens[refugeeAddress] = tempFoundingCitizen;
         } else if (_tokenType == FIRST_NFT_ID) {
-            if (firstCitizen[refugeeAddress] == 0) {
-                firstCitizen[refugeeAddress] = frackingClosedSourceContract
+            uint256 tempFirstCitizen = firstCitizen[refugeeAddress];
+            require(tempFirstCitizen != 6969696969, "ser, the first citizen has been rescued");
+            if (tempFirstCitizen == 0) {
+                tempFirstCitizen = frackingClosedSourceContract
                     .balanceOf(refugeeAddress, beheadedCitizen);
             }
-                firstCitizen[refugeeAddress] = firstCitizen[refugeeAddress].sub(1);
+            tempFirstCitizen = tempFirstCitizen.sub(1);
+            if (tempFirstCitizen == 0) {
+                tempFirstCitizen = 6969696969;
+            }
+            firstCitizen[refugeeAddress] = tempFirstCitizen;
         }
         else {
             revert("Application denied. Please follow us");
