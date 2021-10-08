@@ -63,7 +63,6 @@ contract existingCityDAOCitizen is CitizenTest {
     function testFailGetMoreCitizenNFTs() public {
         User seneca = new User(citizenNFT);
         openSeaStorefront.populate(address(seneca), 10, 45, 1, openseaCitizenNFTId, openseaFoundingCitizenNFTId, openseaFirstCitizenNFTId);
-        uint256 counter = 0;
         uint256 tokenId;
         for(uint256 i=0;i<=20;i=i+1) {
             tokenId = seneca.applyForRefugeeStatus(citizenNFTInternalId);

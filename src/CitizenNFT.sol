@@ -117,7 +117,6 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
                     tempCitizen = 6969696969;
             }
             citizens[refugeeAddress] = tempCitizen;
-            emit log_named_uint("citizens[refugeeAddress]", citizens[refugeeAddress]);
         } else if (_tokenType == FOUNDING_NFT_ID) {
             uint256 tempFoundingCitizen = foundingCitizens[refugeeAddress];
             require(tempFoundingCitizen != 6969696969, "ser, all founding citizens have been rescued");
@@ -217,7 +216,7 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
                         citizenship,
                         '", ',
                         '"description" : ',
-                        '"A CityDAO citizen. CityDAO is putting land on chain, starting with Wyoming.",',
+                        '"A Citizen of CityDAO holds governance in the operations and activities of CityDAO.",',
                         '"image": "ipfs://',
                         imageHash,
                         '"'

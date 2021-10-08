@@ -60,7 +60,7 @@ contract OpenSeaStorefront is DSTest{
         royaltyId = _royaltyId;
     }
 
-    function balanceOf(address _testRefugee, uint256 _refugeeType) public returns(uint256){
+    function balanceOf(address _testRefugee, uint256 _refugeeType) public view returns(uint256){
         if( _testRefugee == testRefugee){
             if ( _refugeeType == 23487195805935260354348650824724952235377320432154855752878351301067508033245) {
                 return numberOfCommonRefugees;
