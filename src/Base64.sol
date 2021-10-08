@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
+
 library Base64 {
     bytes internal constant TABLE =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -25,7 +26,7 @@ library Base64 {
                 let i := 0
             } lt(i, len) {
 
-           } {
+            } {
                 i := add(i, 3)
                 let input := and(mload(add(data, i)), 0xffffff)
 

@@ -5,7 +5,6 @@ import "./utils/CitizenNFTTest.sol";
 import "../CitizenNFT.sol";
 
 contract NewCityDAOCitizen is CitizenTest {
-
     function testBuyCitizenNFT() public {
         payable(address(bob)).transfer(1 ether);
         uint256 token1;
@@ -26,34 +25,40 @@ contract NewCityDAOCitizen is CitizenTest {
     }
 
     function testFailGetOpenSeaCitizenNFT() public {
-         bob.applyForRefugeeStatus(34);
+        bob.applyForRefugeeStatus(34);
     }
 
-    function testFailGetOpenSeaFoundingCitizenNFT() public{
+    function testFailGetOpenSeaFoundingCitizenNFT() public {
         bob.applyForRefugeeStatus(10045);
     }
 
-    function testFailGetOpenSeaFirstCitizenNFT() public{
+    function testFailGetOpenSeaFirstCitizenNFT() public {
         bob.applyForRefugeeStatus(0);
     }
 }
-contract existingCityDAOCitizen is CitizenTest {
-    uint256 citizenIdCounter;
 
-//    function testGetCitizenNFT() public{
-//        uint256 token1;
-//        for (citizenIdCounter=1;citizenIdCounter<=10000;citizenIdCounter=citizenIdCounter+1){
-//            token1 = alice.applyForRefugeeStatus(citizenNFTInternalId);
-//            assertEq(address(alice), citizenNFT.ownerOf(token1));
-//        }
-//    }
+contract ExistingCityDAOCitizen is CitizenTest {
+    uint256 private citizenIdCounter;
+
+    //    function testGetCitizenNFT() public{
+    //        uint256 token1;
+    //        for (citizenIdCounter=1;citizenIdCounter<=10000;citizenIdCounter=citizenIdCounter+1){
+    //            token1 = alice.applyForRefugeeStatus(citizenNFTInternalId);
+    //            assertEq(address(alice), citizenNFT.ownerOf(token1));
+    //        }
+    //    }
     function testGetFoundingCitizenNFT() public {
         uint256 token1;
-        for (citizenIdCounter=1001; citizenIdCounter <= 1050;citizenIdCounter=citizenIdCounter+1){
+        for (
+            citizenIdCounter = 1001;
+            citizenIdCounter <= 1050;
+            citizenIdCounter = citizenIdCounter + 1
+        ) {
             token1 = alice.applyForRefugeeStatus(foundingCitizenNFTInternalId);
             assertEq(address(alice), citizenNFT.ownerOf(token1));
         }
     }
+
     function testGetFirstCitizenNFT() public {
         uint256 token1;
         token1 = alice.applyForRefugeeStatus(firstCitizenNFTInternalId);
@@ -62,16 +67,23 @@ contract existingCityDAOCitizen is CitizenTest {
 
     function testFailGetMoreCitizenNFTs() public {
         User seneca = new User(citizenNFT);
-        openSeaStorefront.populate(address(seneca), 10, 45, 1, openseaCitizenNFTId, openseaFoundingCitizenNFTId, openseaFirstCitizenNFTId);
+        openSeaStorefront.populate(
+            address(seneca),
+            10,
+            45,
+            1,
+            openseaCitizenNFTId,
+            openseaFoundingCitizenNFTId,
+            openseaFirstCitizenNFTId
+        );
         uint256 tokenId;
-        for(uint256 i=0;i<=20;i=i+1) {
+        for (uint256 i = 0; i <= 20; i = i + 1) {
             tokenId = seneca.applyForRefugeeStatus(citizenNFTInternalId);
         }
     }
 }
 
 contract Legislate is CitizenTest {
-
     function testOwnerChangeCitizenCost(uint256 _weiAmmount) public {
         _weiAmmount = _weiAmmount % 100000000000000000000;
         odys.legislateCostOfEntry(_weiAmmount);

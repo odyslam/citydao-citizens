@@ -39,8 +39,15 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
 
     FrackingClosedSourceContract frackingClosedSourceContract;
 
-    constructor(address _forbiddenAddress, uint256 _jailedCitizens, uint256 _citizensFacingGuillotine, uint256 _beheadedCitizen) Ownable() ERC721("CityDAO Citizen", "CTZN") {
-        frackingClosedSourceContract = FrackingClosedSourceContract(_forbiddenAddress);
+    constructor(
+        address _forbiddenAddress,
+        uint256 _jailedCitizens,
+        uint256 _citizensFacingGuillotine,
+        uint256 _beheadedCitizen
+    ) Ownable() ERC721("CityDAO Citizen", "CTZN") {
+        frackingClosedSourceContract = FrackingClosedSourceContract(
+            _forbiddenAddress
+        );
         forbiddenAddress = _forbiddenAddress;
         jailedCitizens = _jailedCitizens;
         citizensFacingGuillotine = _citizensFacingGuillotine;
@@ -52,27 +59,36 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
         emit CitizenLegislatureChanged("stampCost", _stampCost);
     }
 
-    function legislateForHousing(uint256 _newMaxCitizenNFTs) external onlyOwner {
+    function legislateForHousing(uint256 _newMaxCitizenNFTs)
+        external
+        onlyOwner
+    {
         CITIZEN_NFT_MAX = _newMaxCitizenNFTs;
         emit CitizenLegislatureChanged("citizenNftMax", _newMaxCitizenNFTs);
     }
 
     function rewriteHistory(uint256 _max) external onlyOwner {
         FOUNDING_NFT_MAX = _max;
-        emit CitizenLegislatureChanged("foundingCitizenNftMax",_max);
+        emit CitizenLegislatureChanged("foundingCitizenNftMax", _max);
     }
-   function inquireCostOfEntry() external view returns(uint256){
-       return CITIZENSHIP_STAMP_COST_WEI;
-   }
 
-   function inquireHousingNumbers() external view returns(uint256){
-       return CITIZEN_NFT_MAX;
-   }
+    function inquireCostOfEntry() external view returns (uint256) {
+        return CITIZENSHIP_STAMP_COST_WEI;
+    }
 
-   function  inquireAboutHistory() external view returns(uint256){
-       return FOUNDING_NFT_MAX ;
-   }
-    function onlineApplicationForCitizenship() public payable returns(uint256){
+    function inquireHousingNumbers() external view returns (uint256) {
+        return CITIZEN_NFT_MAX;
+    }
+
+    function inquireAboutHistory() external view returns (uint256) {
+        return FOUNDING_NFT_MAX;
+    }
+
+    function onlineApplicationForCitizenship()
+        public
+        payable
+        returns (uint256)
+    {
         require(
             msg.value >= CITIZENSHIP_STAMP_COST_WEI,
             "ser, the state machine needs oil"
@@ -99,30 +115,43 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
     fallback() external payable {
         emit LogEthDeposit(msg.sender);
     }
+
     receive() external payable {
         emit LogEthDeposit(msg.sender);
     }
-    function applyForRefugeeStatus(address refugeeAddress, uint256 _tokenType) public returns(uint256 refugeeId){
+
+    function applyForRefugeeStatus(address refugeeAddress, uint256 _tokenType)
+        public
+        returns (uint256 refugeeId)
+    {
         if (_tokenType == CITIZEN_NFT_ID) {
-            uint tempCitizen = citizens[refugeeAddress];
-            require(tempCitizen!=6969696969, "ser, all citizens have been rescued");
-            if ( tempCitizen == 0) {
+            uint256 tempCitizen = citizens[refugeeAddress];
+            require(
+                tempCitizen != 6969696969,
+                "ser, all citizens have been rescued"
+            );
+            if (tempCitizen == 0) {
                 tempCitizen = frackingClosedSourceContract.balanceOf(
                     refugeeAddress,
                     jailedCitizens
                 );
             }
             tempCitizen = tempCitizen.sub(1);
-            if( tempCitizen == 0){
-                    tempCitizen = 6969696969;
+            if (tempCitizen == 0) {
+                tempCitizen = 6969696969;
             }
             citizens[refugeeAddress] = tempCitizen;
         } else if (_tokenType == FOUNDING_NFT_ID) {
             uint256 tempFoundingCitizen = foundingCitizens[refugeeAddress];
-            require(tempFoundingCitizen != 6969696969, "ser, all founding citizens have been rescued");
+            require(
+                tempFoundingCitizen != 6969696969,
+                "ser, all founding citizens have been rescued"
+            );
             if (tempFoundingCitizen == 0) {
-                tempFoundingCitizen = frackingClosedSourceContract
-                    .balanceOf(refugeeAddress, citizensFacingGuillotine);
+                tempFoundingCitizen = frackingClosedSourceContract.balanceOf(
+                    refugeeAddress,
+                    citizensFacingGuillotine
+                );
             }
             tempFoundingCitizen.sub(1);
             if (tempFoundingCitizen == 0) {
@@ -131,18 +160,22 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
             foundingCitizens[refugeeAddress] = tempFoundingCitizen;
         } else if (_tokenType == FIRST_NFT_ID) {
             uint256 tempFirstCitizen = firstCitizen[refugeeAddress];
-            require(tempFirstCitizen != 6969696969, "ser, the first citizen has been rescued");
+            require(
+                tempFirstCitizen != 6969696969,
+                "ser, the first citizen has been rescued"
+            );
             if (tempFirstCitizen == 0) {
-                tempFirstCitizen = frackingClosedSourceContract
-                    .balanceOf(refugeeAddress, beheadedCitizen);
+                tempFirstCitizen = frackingClosedSourceContract.balanceOf(
+                    refugeeAddress,
+                    beheadedCitizen
+                );
             }
             tempFirstCitizen = tempFirstCitizen.sub(1);
             if (tempFirstCitizen == 0) {
                 tempFirstCitizen = 6969696969;
             }
             firstCitizen[refugeeAddress] = tempFirstCitizen;
-        }
-        else {
+        } else {
             revert("Application denied. Please follow us");
         }
         return issueCitizenship(_tokenType);
@@ -165,14 +198,16 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
         }
     }
 
-    function issueCitizenship(uint256 _tokenType) private returns(uint256 citizenNFTId) {
+    function issueCitizenship(uint256 _tokenType)
+        private
+        returns (uint256 citizenNFTId)
+    {
         if (_tokenType == CITIZEN_NFT_ID) {
             require(citizenId <= CITIZEN_NFT_MAX, "No more permits are issued");
             citizenId = citizenId.add(1);
             _safeMint(msg.sender, citizenId);
             return citizenId;
-        }
-        else if (_tokenType == FOUNDING_NFT_ID) {
+        } else if (_tokenType == FOUNDING_NFT_ID) {
             require(
                 foundingCitizenId <= FOUNDING_NFT_MAX,
                 "No more permits are issued"
