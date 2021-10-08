@@ -26,10 +26,13 @@ contract User is ERC721Holder, DSTest {
    function legislateCostOfEntry(uint256 _weiAmmount) public {
        citizenNFT.legislateCostOfEntry(_weiAmmount);
    }
-   function legislateForHousing(uint256 _max) public {
-       citizenNFT.legislateForHousing(_max);
+   function legislateForHousing(uint256 _maxCitizens) public {
+       citizenNFT.legislateForHousing(_maxCitizens);
    }
 
+   function rewriteHistory(uint256 _maxFoundingCitizens) public {
+       citizenNFT.rewriteHistory(_maxFoundingCitizens);
+    }
     receive() external payable {}
 }
 

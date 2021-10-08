@@ -74,12 +74,22 @@ contract existingCityDAOCitizen is CitizenTest {
 contract Legislate is CitizenTest {
 
     function testOwnerChangeCitizenCost(uint256 _weiAmmount) public {
+        _weiAmmount = _weiAmmount % 100000000000000000000;
         odys.legislateCostOfEntry(_weiAmmount);
+        payable(address(bob)).transfer(100 ether);
+        uint256 token1;
+        token1 = bob.onlineApplicationForCitizenship(_weiAmmount);
+        assertEq(token1, 1);
         assertEq(citizenNFT.inquireCostOfEntry(), _weiAmmount);
     }
 
     function testOwnerChangeCitizensNumbe(uint256 _housingNumber) public {
         odys.legislateForHousing(_housingNumber);
         assertEq(citizenNFT.inquireHousingNumbers(), _housingNumber);
+    }
+
+    function testRewriteHistory(uint256 _maxFoundingCitizens) public {
+        odys.rewriteHistory(_maxFoundingCitizens);
+        assertEq(citizenNFT.inquireAboutHistory(), _maxFoundingCitizens);
     }
 }
