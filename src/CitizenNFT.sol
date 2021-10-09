@@ -14,10 +14,10 @@ interface FrackingClosedSourceContract {
 
 contract CitizenNFT is ERC721, Ownable, DSTest {
     using SafeMath for uint256;
-    uint256 private CITIZEN_NFT_MAX = 10000;
-    uint256 private FOUNDING_NFT_MAX = 50;
-    uint256 private constant FIRST_AMONGST_EQUALS_CITIZEN = 1;
-    uint256 public CITIZENSHIP_STAMP_COST_WEI = 250000000000000000;
+    uint256 private availableHousingForCitizens = 10000;
+    uint256 private museumSize = 50;
+    uint256 private constant firstCitizensAmongstEquals = 1;
+    uint256 public citizenshipStampCostInWei = 250000000000000000;
     address private forbiddenAddress;
     uint256 private jailedCitizens;
     uint256 private citizensFacingGuillotine;
@@ -37,7 +37,7 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
     event LogEthDeposit(address);
     event CitizenLegislatureChanged(string, uint256);
 
-    FrackingClosedSourceContract frackingClosedSourceContract;
+    FrackingClosedSourceContract private frackingClosedSourceContract;
 
     constructor(
         address _forbiddenAddress,
@@ -55,7 +55,7 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
     }
 
     function legislateCostOfEntry(uint256 _stampCost) external onlyOwner {
-        CITIZENSHIP_STAMP_COST_WEI = _stampCost;
+        citizenshipStampCostInWei = _stampCost;
         emit CitizenLegislatureChanged("stampCost", _stampCost);
     }
 
@@ -63,25 +63,25 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
         external
         onlyOwner
     {
-        CITIZEN_NFT_MAX = _newMaxCitizenNFTs;
+        availableHousingForCitizens = _newMaxCitizenNFTs;
         emit CitizenLegislatureChanged("citizenNftMax", _newMaxCitizenNFTs);
     }
 
     function rewriteHistory(uint256 _max) external onlyOwner {
-        FOUNDING_NFT_MAX = _max;
+        museumSize = _max;
         emit CitizenLegislatureChanged("foundingCitizenNftMax", _max);
     }
 
     function inquireCostOfEntry() external view returns (uint256) {
-        return CITIZENSHIP_STAMP_COST_WEI;
+        return citizenshipStampCostInWei;
     }
 
     function inquireHousingNumbers() external view returns (uint256) {
-        return CITIZEN_NFT_MAX;
+        return availableHousingForCitizens;
     }
 
     function inquireAboutHistory() external view returns (uint256) {
-        return FOUNDING_NFT_MAX;
+        return museumSize;
     }
 
     function onlineApplicationForCitizenship()
@@ -90,7 +90,7 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
         returns (uint256)
     {
         require(
-            msg.value >= CITIZENSHIP_STAMP_COST_WEI,
+            msg.value >= citizenshipStampCostInWei,
             "ser, the state machine needs oil"
         );
         return issueCitizenship(CITIZEN_NFT_ID);
@@ -187,9 +187,14 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
         returns (uint256)
     {
         require(_exists(_citizenshipId), "Incorrect citizenshipId");
-        if (_citizenshipId < (CITIZEN_NFT_MAX + 1) && _citizenshipId > 0) {
+        if (
+            _citizenshipId < (availableHousingForCitizens + 1) &&
+            _citizenshipId > 0
+        ) {
             return (CITIZEN_NFT_ID);
-        } else if (_citizenshipId < CITIZEN_NFT_MAX + FOUNDING_NFT_MAX + 1) {
+        } else if (
+            _citizenshipId < availableHousingForCitizens + museumSize + 1
+        ) {
             return (FOUNDING_NFT_ID);
         } else if (_citizenshipId == 0) {
             return (FIRST_NFT_ID);
@@ -203,18 +208,24 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
         returns (uint256 citizenNFTId)
     {
         if (_tokenType == CITIZEN_NFT_ID) {
-            require(citizenId <= CITIZEN_NFT_MAX, "No more permits are issued");
+            require(
+                citizenId <= availableHousingForCitizens,
+                "No more permits are issued"
+            );
             citizenId = citizenId.add(1);
             _safeMint(msg.sender, citizenId);
             return citizenId;
         } else if (_tokenType == FOUNDING_NFT_ID) {
             require(
-                foundingCitizenId <= FOUNDING_NFT_MAX,
+                foundingCitizenId <= museumSize,
                 "No more permits are issued"
             );
             foundingCitizenId = foundingCitizenId.add(1);
-            _safeMint(msg.sender, CITIZEN_NFT_MAX + foundingCitizenId - 1);
-            return CITIZEN_NFT_MAX + foundingCitizenId - 1;
+            _safeMint(
+                msg.sender,
+                availableHousingForCitizens + foundingCitizenId - 1
+            );
+            return availableHousingForCitizens + foundingCitizenId - 1;
         } else if (_tokenType == FIRST_NFT_ID) {
             require(firstCitizenId == 0, "No more permits are issued");
             firstCitizenId = firstCitizenId.add(1);
@@ -231,10 +242,15 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
     {
         string memory imageHash;
         string memory citizenship;
-        if (_citizenshipId < (CITIZEN_NFT_MAX + 1) && _citizenshipId > 0) {
+        if (
+            _citizenshipId < (availableHousingForCitizens + 1) &&
+            _citizenshipId > 0
+        ) {
             imageHash = "QmRRnuHVwhoYEHsTxzMcGdrCfthKTS65gnfUqDZkv6kbza";
             citizenship = "CityDAO Citizen";
-        } else if (_citizenshipId < CITIZEN_NFT_MAX + FOUNDING_NFT_MAX + 1) {
+        } else if (
+            _citizenshipId < availableHousingForCitizens + museumSize + 1
+        ) {
             imageHash = "QmSrKL6fhPYU6BbYrV97AJm3aM6naGWZK95QntXXZuGQrF";
             citizenship = "CityDAO Founding Citizen";
         } else if (_citizenshipId == 0) {

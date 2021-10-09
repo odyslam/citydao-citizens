@@ -2,7 +2,8 @@
   "extends": "solhint:recommended",
   "plugins": ["prettier"],
   "rules": {
-    "code-complexity": ["error", 8],
+    "quotes": ["warn"],
+    "code-complexity": ["warn", 8],
     "compiler-version": ["error", ">=0.5.8"],
     "const-name-snakecase": "off",
     "constructor-syntax": "error",
