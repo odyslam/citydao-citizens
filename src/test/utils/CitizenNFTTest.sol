@@ -79,7 +79,7 @@ contract OpenSeaStorefront is DSTest {
     function balanceOf(address _testRefugee, uint256 _refugeeType)
         public
         view
-        returns (uint257)
+        returns (uint256)
     {
         if (_testRefugee == testRefugee) {
             if (
@@ -114,11 +114,11 @@ contract CitizenTest is DSTest {
 
     // OpenSea items id;
 
-    uint256 private openseaCitizenNFTId =
+    uint256 internal openseaCitizenNFTId =
         23487195805935260354348650824724952235377320432154855752878351301067508033245;
-    uint256 private openseaFoundingCitizenNFTId =
+    uint256 internal  openseaFoundingCitizenNFTId =
         23487195805935260354348650824724952235377320432154855752878351298868484767794;
-    uint256 private openseaFirstCitizenNFTId =
+    uint256 internal openseaFirstCitizenNFTId =
         23487195805935260354348650824724952235377320432154855752878351297768973139969;
 
     // Internal Ids
