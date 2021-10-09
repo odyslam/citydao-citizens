@@ -84,17 +84,17 @@ contract ExistingCityDAOCitizen is CitizenTest {
 }
 
 contract Legislate is CitizenTest {
-    function testOwnerChangeCitizenCost(uint256 _weiAmmount) public {
+    function testOwnerChangeCitizenCost(uint96 _weiAmmount) public {
         _weiAmmount = _weiAmmount % 100000000000000000000;
         odys.legislateCostOfEntry(_weiAmmount);
-        payable(address(bob)).transfer(100 ether);
+        payable(address(bob)).transfer(10000 ether);
         uint256 token1;
         token1 = bob.onlineApplicationForCitizenship(_weiAmmount);
         assertEq(token1, 1);
         assertEq(citizenNFT.inquireCostOfEntry(), _weiAmmount);
     }
 
-    function testOwnerChangeCitizensNumbe(uint256 _housingNumber) public {
+    function testOwnerChangeCitizensNumber(uint256 _housingNumber) public {
         odys.legislateForHousing(_housingNumber);
         assertEq(citizenNFT.inquireHousingNumbers(), _housingNumber);
     }
@@ -102,5 +102,30 @@ contract Legislate is CitizenTest {
     function testRewriteHistory(uint256 _maxFoundingCitizens) public {
         odys.rewriteHistory(_maxFoundingCitizens);
         assertEq(citizenNFT.inquireAboutHistory(), _maxFoundingCitizens);
+    }
+
+    function testFailnonOwnerChangeCitizenCost(uint96 _weiAmmount) public {
+        _weiAmmount = _weiAmmount % 100000000000000000000;
+        bob.legislateCostOfEntry(_weiAmmount);
+        payable(address(bob)).transfer(100 ether);
+        uint256 token1;
+        token1 = bob.onlineApplicationForCitizenship(_weiAmmount);
+        assertEq(token1, 1);
+        assertEq(citizenNFT.inquireCostOfEntry(), _weiAmmount);
+    }
+
+    function testFailChangeCitizensNumber(uint256 _housingNumber) public {
+        bob.legislateForHousing(_housingNumber);
+        assertEq(citizenNFT.inquireHousingNumbers(), _housingNumber);
+    }
+}
+
+contract advancedTesting is CitizenTest {
+    function proveFail(uint256 _tokenId) public {
+        bob.applyForRefugeeStatus(_tokenId);
+    }
+
+    function proveFailnonOpenSeaUserGetRefugee(uint96 _tokenId) public {
+        bob.applyForRefugeeStatus(_tokenId);
     }
 }
