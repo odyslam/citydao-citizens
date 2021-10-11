@@ -48,10 +48,9 @@ contract User is ERC721Holder, DSTest {
 /// @notice Helper test contract that sets up the testing suite.
 
 contract OpenSeaStorefront is DSTest {
-    address private testRefugee;
-    uint256 private numberOfCommonRefugees;
-    uint256 private numberOfHighClassRefugees;
-    uint256 private numberOfRoyalty;
+    mapping(address => uint256) private numberOfCommonRefugees;
+    mapping(address => uint256) private numberOfHighClassRefugees;
+    mapping(address => uint256) private numberOfRoyalty;
     uint256 private commonId;
     uint256 private highClassId;
     uint256 private royaltyId;
@@ -59,44 +58,43 @@ contract OpenSeaStorefront is DSTest {
     constructor() {}
 
     function populate(
-        address _testRefugee,
-        uint256 _numberOfCommonRefugees,
-        uint256 _numberOfHighClassRefugees,
-        uint256 _numberOfRoyalty,
         uint256 _commonId,
         uint256 _highClassId,
         uint256 _royaltyId
     ) public {
-        testRefugee = _testRefugee;
-        numberOfCommonRefugees = _numberOfCommonRefugees;
-        numberOfHighClassRefugees = _numberOfHighClassRefugees;
-        numberOfRoyalty = _numberOfRoyalty;
         commonId = _commonId;
         highClassId = _highClassId;
         royaltyId = _royaltyId;
     }
 
+    function populateAddress(
+        address _testRefugee,
+        uint256 _numberOfCommonRefugees,
+        uint256 _numberOfHighClassRefugees,
+        uint256 _numberOfRoyalty
+    ) public {
+        numberOfCommonRefugees[_testRefugee] = _numberOfCommonRefugees;
+        numberOfHighClassRefugees[_testRefugee] = _numberOfHighClassRefugees;
+        numberOfRoyalty[_testRefugee] = _numberOfRoyalty;
+    }
+
     function balanceOf(address _testRefugee, uint256 _refugeeType)
         public
         view
-        returns (uint257)
+        returns (uint256)
     {
-        if (_testRefugee == testRefugee) {
-            if (
-                _refugeeType ==
-                23487195805935260354348650824724952235377320432154855752878351301067508033245
-            ) {
-                return numberOfCommonRefugees;
-            } else if (
-                _refugeeType ==
-                23487195805935260354348650824724952235377320432154855752878351298868484767794
-            ) {
-                return numberOfHighClassRefugees;
-            } else {
-                return numberOfRoyalty;
-            }
+        if (
+            _refugeeType ==
+            23487195805935260354348650824724952235377320432154855752878351301067508033245
+        ) {
+            return numberOfCommonRefugees[_testRefugee];
+        } else if (
+            _refugeeType ==
+            23487195805935260354348650824724952235377320432154855752878351298868484767794
+        ) {
+            return numberOfHighClassRefugees[_testRefugee];
         } else {
-            return 0;
+            return numberOfRoyalty[_testRefugee];
         }
     }
 }
@@ -114,11 +112,11 @@ contract CitizenTest is DSTest {
 
     // OpenSea items id;
 
-    uint256 private openseaCitizenNFTId =
+    uint256 internal openseaCitizenNFTId =
         23487195805935260354348650824724952235377320432154855752878351301067508033245;
-    uint256 private openseaFoundingCitizenNFTId =
+    uint256 internal openseaFoundingCitizenNFTId =
         23487195805935260354348650824724952235377320432154855752878351298868484767794;
-    uint256 private openseaFirstCitizenNFTId =
+    uint256 internal openseaFirstCitizenNFTId =
         23487195805935260354348650824724952235377320432154855752878351297768973139969;
 
     // Internal Ids
@@ -139,14 +137,11 @@ contract CitizenTest is DSTest {
         alice = new User(citizenNFT);
         odys = new User(citizenNFT);
         openSeaStorefront.populate(
-            address(alice),
-            10000,
-            50,
-            1,
             openseaCitizenNFTId,
             openseaFoundingCitizenNFTId,
             openseaFirstCitizenNFTId
         );
+        openSeaStorefront.populateAddress(address(alice), 10000, 50, 1);
         citizenNFT.transferOwnership(address(odys));
         assertEq(address(odys), citizenNFT.owner());
     }
