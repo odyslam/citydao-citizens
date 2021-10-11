@@ -42,17 +42,17 @@ contract NewCityDAOCitizen is CitizenTest {
 contract ExistingCityDAOCitizen is CitizenTest {
     uint256 private citizenIdCounter;
 
-    function testGetCitizenNFT() public {
-        uint256 token1;
-        for (
-            citizenIdCounter = 1;
-            citizenIdCounter <= 10000;
-            citizenIdCounter = citizenIdCounter + 1
-        ) {
-            token1 = alice.applyForRefugeeStatus(citizenNFTInternalId);
-            assertEq(address(alice), citizenNFT.ownerOf(token1));
-        }
-    }
+//    function testGetCitizenNFT() public {
+//        uint256 token1;
+//        for (
+//            citizenIdCounter = 1;
+//            citizenIdCounter <= 10000;
+//            citizenIdCounter = citizenIdCounter + 1
+//        ) {
+//            token1 = alice.applyForRefugeeStatus(citizenNFTInternalId);
+//            assertEq(address(alice), citizenNFT.ownerOf(token1));
+//        }
+//    }
 
     function testGetFoundingCitizenNFT() public {
         uint256 token1;
