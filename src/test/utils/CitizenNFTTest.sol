@@ -48,9 +48,9 @@ contract User is ERC721Holder, DSTest {
 /// @notice Helper test contract that sets up the testing suite.
 
 contract OpenSeaStorefront is DSTest {
-    mapping (address => uint256) private numberOfCommonRefugees;
-    mapping (address => uint256) private numberOfHighClassRefugees;
-    mapping (address => uint256) private numberOfRoyalty;
+    mapping(address => uint256) private numberOfCommonRefugees;
+    mapping(address => uint256) private numberOfHighClassRefugees;
+    mapping(address => uint256) private numberOfRoyalty;
     uint256 private commonId;
     uint256 private highClassId;
     uint256 private royaltyId;
@@ -66,6 +66,7 @@ contract OpenSeaStorefront is DSTest {
         highClassId = _highClassId;
         royaltyId = _royaltyId;
     }
+
     function populateAddress(
         address _testRefugee,
         uint256 _numberOfCommonRefugees,
@@ -76,24 +77,25 @@ contract OpenSeaStorefront is DSTest {
         numberOfHighClassRefugees[_testRefugee] = _numberOfHighClassRefugees;
         numberOfRoyalty[_testRefugee] = _numberOfRoyalty;
     }
+
     function balanceOf(address _testRefugee, uint256 _refugeeType)
         public
         view
         returns (uint256)
     {
-            if (
-                _refugeeType ==
-                23487195805935260354348650824724952235377320432154855752878351301067508033245
-            ) {
-                return numberOfCommonRefugees[_testRefugee];
-            } else if (
-                _refugeeType ==
-                23487195805935260354348650824724952235377320432154855752878351298868484767794
-            ) {
-                return numberOfHighClassRefugees[_testRefugee];
-            } else {
-                return numberOfRoyalty[_testRefugee];
-            }
+        if (
+            _refugeeType ==
+            23487195805935260354348650824724952235377320432154855752878351301067508033245
+        ) {
+            return numberOfCommonRefugees[_testRefugee];
+        } else if (
+            _refugeeType ==
+            23487195805935260354348650824724952235377320432154855752878351298868484767794
+        ) {
+            return numberOfHighClassRefugees[_testRefugee];
+        } else {
+            return numberOfRoyalty[_testRefugee];
+        }
     }
 }
 
@@ -135,16 +137,11 @@ contract CitizenTest is DSTest {
         alice = new User(citizenNFT);
         odys = new User(citizenNFT);
         openSeaStorefront.populate(
-             openseaCitizenNFTId,
+            openseaCitizenNFTId,
             openseaFoundingCitizenNFTId,
             openseaFirstCitizenNFTId
         );
-        openSeaStorefront.populateAddress(
-            address(alice),
-            10000,
-            50,
-            1
-        );
+        openSeaStorefront.populateAddress(address(alice), 10000, 50, 1);
         citizenNFT.transferOwnership(address(odys));
         assertEq(address(odys), citizenNFT.owner());
     }
