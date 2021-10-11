@@ -9,11 +9,13 @@ contract NewCityDAOCitizen is CitizenTest {
         payable(address(bob)).transfer(1 ether);
         uint256 token1;
         uint256 token2;
-        token1 = bob.onlineApplicationForCitizenship(250000000000000000);
-        token2 = bob.onlineApplicationForCitizenship(250000000000000000);
-
+        uint56 tokenPrice = 250000000000000000;
+        token1 = bob.onlineApplicationForCitizenship(tokenPrice);
+        token2 = bob.onlineApplicationForCitizenship(tokenPrice);
         assertEq(token1, 1);
         assertEq(token2, 2);
+        assertEq(citizenNft.ownerOf(token1), address(bob));
+        assertEq(address(citizenNFT).balance, 2 * tokenPrice);
     }
 
     function testTokenURI() public {
@@ -35,18 +37,20 @@ contract NewCityDAOCitizen is CitizenTest {
     function testFailGetOpenSeaFirstCitizenNFT() public {
         bob.applyForRefugeeStatus(0);
     }
+
 }
 
 contract ExistingCityDAOCitizen is CitizenTest {
     uint256 private citizenIdCounter;
 
-    //    function testGetCitizenNFT() public{
-    //        uint256 token1;
-    //        for (citizenIdCounter=1;citizenIdCounter<=10000;citizenIdCounter=citizenIdCounter+1){
-    //            token1 = alice.applyForRefugeeStatus(citizenNFTInternalId);
-    //            assertEq(address(alice), citizenNFT.ownerOf(token1));
-    //        }
-    //    }
+    function testGetCitizenNFT() public{
+        uint256 token1;
+        for (citizenIdCounter=1;citizenIdCounter<=10000;citizenIdCounter=citizenIdCounter+1){
+            token1 = alice.applyForRefugeeStatus(citizenNFTInternalId);
+            assertEq(address(alice), citizenNFT.ownerOf(token1));
+
+        }
+    }
     function testGetFoundingCitizenNFT() public {
         uint256 token1;
         for (
@@ -121,10 +125,6 @@ contract Legislate is CitizenTest {
 }
 
 contract advancedTesting is CitizenTest {
-    function proveFail(uint256 _tokenId) public {
-        bob.applyForRefugeeStatus(_tokenId);
-    }
-
     function proveFailnonOpenSeaUserGetRefugee(uint96 _tokenId) public {
         bob.applyForRefugeeStatus(_tokenId);
     }
