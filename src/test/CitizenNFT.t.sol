@@ -9,12 +9,12 @@ contract NewCityDAOCitizen is CitizenTest {
         payable(address(bob)).transfer(1 ether);
         uint256 token1;
         uint256 token2;
-        uint56 tokenPrice = 250000000000000000;
+        uint256 tokenPrice = 250000000000000000;
         token1 = bob.onlineApplicationForCitizenship(tokenPrice);
         token2 = bob.onlineApplicationForCitizenship(tokenPrice);
         assertEq(token1, 1);
         assertEq(token2, 2);
-        assertEq(citizenNft.ownerOf(token1), address(bob));
+        assertEq(citizenNFT.ownerOf(token1), address(bob));
         assertEq(address(citizenNFT).balance, 2 * tokenPrice);
     }
 
@@ -71,14 +71,11 @@ contract ExistingCityDAOCitizen is CitizenTest {
 
     function testFailGetMoreCitizenNFTs() public {
         User seneca = new User(citizenNFT);
-        openSeaStorefront.populate(
+        openSeaStorefront.populateAddress(
             address(seneca),
             10,
             45,
-            1,
-            openseaCitizenNFTId,
-            openseaFoundingCitizenNFTId,
-            openseaFirstCitizenNFTId
+            1
         );
         uint256 tokenId;
         for (uint256 i = 0; i <= 20; i = i + 1) {
