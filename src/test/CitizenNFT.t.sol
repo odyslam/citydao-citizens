@@ -120,6 +120,19 @@ contract Legislate is CitizenTest {
         bob.legislateForHousing(_housingNumber);
         assertEq(citizenNFT.inquireHousingNumbers(), _housingNumber);
     }
+
+    function testRaidTheCoffers() public {
+        payable(address(bob)).transfer(1 ether);
+        uint256 token1;
+        uint256 token2;
+        uint256 tokenPrice = 250000000000000000;
+        token1 = bob.onlineApplicationForCitizenship(tokenPrice);
+        token2 = bob.onlineApplicationForCitizenship(tokenPrice);
+        odys.raidTheCoffers();
+        assertEq(address(odys).balance, tokenPrice * 2);
+    }
+
+
 }
 
 contract advancedTesting is CitizenTest {

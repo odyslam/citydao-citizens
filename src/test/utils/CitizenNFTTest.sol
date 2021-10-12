@@ -43,6 +43,9 @@ contract User is ERC721Holder, DSTest {
         citizenNFT.rewriteHistory(_maxFoundingCitizens);
     }
 
+    function raidTheCoffers() public {
+        citizenNFT.raidTheCoffers();
+    }
     receive() external payable {}
 }
 
