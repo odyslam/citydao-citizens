@@ -80,6 +80,9 @@ contract ExistingCityDAOCitizen is CitizenTest {
             tokenId = seneca.applyForRefugeeStatus(citizenNFTInternalId);
         }
     }
+    function testInquireRefugeeStatus() public {
+        assertEq(citizenNFT.inquireRefugeeStatus(address(alice), 42), openSeaStorefront.balanceOf(address(alice), 23487195805935260354348650824724952235377320432154855752878351301067508033245));
+    }
 }
 
 contract Legislate is CitizenTest {

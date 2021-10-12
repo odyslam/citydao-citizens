@@ -5,6 +5,7 @@ import "ds-test/test.sol";
 import "./Hevm.sol";
 import "../../CitizenNFT.sol";
 import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
+import "../../OpenSeaStorefront.sol";
 
 /// @notice Since we deplyo the smart contract from another smart contract and
 /// the users are smart contracts as well, we need to implement a special function
@@ -47,57 +48,6 @@ contract User is ERC721Holder, DSTest {
 
 /// @notice Helper test contract that sets up the testing suite.
 
-contract OpenSeaStorefront is DSTest {
-    mapping(address => uint256) private numberOfCommonRefugees;
-    mapping(address => uint256) private numberOfHighClassRefugees;
-    mapping(address => uint256) private numberOfRoyalty;
-    uint256 private commonId;
-    uint256 private highClassId;
-    uint256 private royaltyId;
-
-    constructor() {}
-
-    function populate(
-        uint256 _commonId,
-        uint256 _highClassId,
-        uint256 _royaltyId
-    ) public {
-        commonId = _commonId;
-        highClassId = _highClassId;
-        royaltyId = _royaltyId;
-    }
-
-    function populateAddress(
-        address _testRefugee,
-        uint256 _numberOfCommonRefugees,
-        uint256 _numberOfHighClassRefugees,
-        uint256 _numberOfRoyalty
-    ) public {
-        numberOfCommonRefugees[_testRefugee] = _numberOfCommonRefugees;
-        numberOfHighClassRefugees[_testRefugee] = _numberOfHighClassRefugees;
-        numberOfRoyalty[_testRefugee] = _numberOfRoyalty;
-    }
-
-    function balanceOf(address _testRefugee, uint256 _refugeeType)
-        public
-        view
-        returns (uint256)
-    {
-        if (
-            _refugeeType ==
-            23487195805935260354348650824724952235377320432154855752878351301067508033245
-        ) {
-            return numberOfCommonRefugees[_testRefugee];
-        } else if (
-            _refugeeType ==
-            23487195805935260354348650824724952235377320432154855752878351298868484767794
-        ) {
-            return numberOfHighClassRefugees[_testRefugee];
-        } else {
-            return numberOfRoyalty[_testRefugee];
-        }
-    }
-}
 
 contract CitizenTest is DSTest {
     Hevm internal constant hevm = Hevm(HEVM_ADDRESS);
