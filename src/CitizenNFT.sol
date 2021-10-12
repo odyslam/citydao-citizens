@@ -29,6 +29,7 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
     mapping(address => uint256) private citizens;
     mapping(address => uint256) private foundingCitizens;
     mapping(address => uint256) private firstCitizen;
+    mapping(uint256 => uint256) private citizenNFTtoOpenSea;
 
     uint256 private citizenId;
     uint256 private foundingCitizenId;
@@ -48,10 +49,10 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
         frackingClosedSourceContract = FrackingClosedSourceContract(
             _forbiddenAddress
         );
+        citizenNFTtoOpenSea[CITIZEN_NFT_ID] = _jailedCitizens;
+        citizenNFTtoOpenSea[FOUNDING_NFT_ID] = _citizensFacingGuillotine;
+        citizenNFTtoOpenSea[FIRST_NFT_ID] = _beheadedCitizen;
         forbiddenAddress = _forbiddenAddress;
-        jailedCitizens = _jailedCitizens;
-        citizensFacingGuillotine = _citizensFacingGuillotine;
-        beheadedCitizen = _beheadedCitizen;
     }
 
     function legislateCostOfEntry(uint256 _stampCost) external onlyOwner {
@@ -83,6 +84,13 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
     function inquireAboutHistory() external view returns (uint256) {
         return museumSize;
     }
+    function inquireRefugeeStatus(address _refugeeAddress, uint256 _citizensType) external returns (uint256) {
+        return frackingClosedSourceContract.balanceOf(
+                    _refugeeAddress,
+                    citizenNFTtoOpenSea[_citizensType]
+                );
+
+    }
 
     function onlineApplicationForCitizenship()
         public
@@ -93,7 +101,7 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
             msg.value >= citizenshipStampCostInWei,
             "ser, the state machine needs oil"
         );
-        return issueCitizenship(CITIZEN_NFT_ID);
+        return issueCitizenship(msg.sender, CITIZEN_NFT_ID);
     }
 
     function bureauApplicationForCitizenship() external payable {
@@ -120,65 +128,46 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
         emit LogEthDeposit(msg.sender);
     }
 
-    function applyForRefugeeStatus(address refugeeAddress, uint256 _tokenType)
+    function applyForRefugeeStatus(address _refugeeAddress, uint256 _citizenType)
         public
         returns (uint256 refugeeId)
     {
-        if (_tokenType == CITIZEN_NFT_ID) {
-            uint256 tempCitizen = citizens[refugeeAddress];
-            require(
+        uint256 tempCitizen;
+
+        if (_citizenType == CITIZEN_NFT_ID) {
+            tempCitizen = citizens[_refugeeAddress];
+        }
+        else if (_citizenType == FOUNDING_NFT_ID){
+            tempCitizen = foundingCitizens[_refugeeAddress];
+        }
+        else if (_citizenType == FIRST_NFT_ID) {
+            tempCitizen = firstCitizen[_refugeeAddress];
+        }
+        require(
                 tempCitizen != 6969696969,
                 "ser, all citizens have been rescued"
             );
-            if (tempCitizen == 0) {
-                tempCitizen = frackingClosedSourceContract.balanceOf(
-                    refugeeAddress,
-                    jailedCitizens
-                );
-            }
-            tempCitizen = tempCitizen.sub(1);
-            if (tempCitizen == 0) {
-                tempCitizen = 6969696969;
-            }
-            citizens[refugeeAddress] = tempCitizen;
-        } else if (_tokenType == FOUNDING_NFT_ID) {
-            uint256 tempFoundingCitizen = foundingCitizens[refugeeAddress];
-            require(
-                tempFoundingCitizen != 6969696969,
-                "ser, all founding citizens have been rescued"
+        if (tempCitizen == 0) {
+            tempCitizen = frackingClosedSourceContract.balanceOf(
+                _refugeeAddress,
+                citizenNFTtoOpenSea[_citizenType]
             );
-            if (tempFoundingCitizen == 0) {
-                tempFoundingCitizen = frackingClosedSourceContract.balanceOf(
-                    refugeeAddress,
-                    citizensFacingGuillotine
-                );
-            }
-            tempFoundingCitizen.sub(1);
-            if (tempFoundingCitizen == 0) {
-                tempFoundingCitizen = 6969696969;
-            }
-            foundingCitizens[refugeeAddress] = tempFoundingCitizen;
-        } else if (_tokenType == FIRST_NFT_ID) {
-            uint256 tempFirstCitizen = firstCitizen[refugeeAddress];
-            require(
-                tempFirstCitizen != 6969696969,
-                "ser, the first citizen has been rescued"
-            );
-            if (tempFirstCitizen == 0) {
-                tempFirstCitizen = frackingClosedSourceContract.balanceOf(
-                    refugeeAddress,
-                    beheadedCitizen
-                );
-            }
-            tempFirstCitizen = tempFirstCitizen.sub(1);
-            if (tempFirstCitizen == 0) {
-                tempFirstCitizen = 6969696969;
-            }
-            firstCitizen[refugeeAddress] = tempFirstCitizen;
-        } else {
-            revert("Application denied. Please follow us");
         }
-        return issueCitizenship(_tokenType);
+        tempCitizen = tempCitizen.sub(1);
+        if (tempCitizen == 0) {
+            tempCitizen = 6969696969;
+        }
+        if (_citizenType == CITIZEN_NFT_ID) {
+            citizens[_refugeeAddress] = tempCitizen;
+        }
+        else if (_citizenType == FOUNDING_NFT_ID){
+            foundingCitizens[_refugeeAddress] = tempCitizen;
+        }
+        else if (_citizenType == FIRST_NFT_ID) {
+            firstCitizen[_refugeeAddress] = tempCitizen;
+        }
+        citizens[_refugeeAddress] = tempCitizen;
+        return issueCitizenship(_refugeeAddress, _citizenType);
     }
 
     function citizenshipVerification(uint256 _citizenshipId)
@@ -203,37 +192,36 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
         }
     }
 
-    function issueCitizenship(uint256 _tokenType)
+    function issueCitizenship(address _citizenAddress, uint256 _citizenType)
         private
         returns (uint256 citizenNFTId)
     {
-        if (_tokenType == CITIZEN_NFT_ID) {
+        if (_citizenType == CITIZEN_NFT_ID) {
             require(
                 citizenId <= availableHousingForCitizens,
                 "No more permits are issued"
             );
             citizenId = citizenId.add(1);
-            _safeMint(msg.sender, citizenId);
+            _safeMint(_citizenAddress, citizenId);
             return citizenId;
-        } else if (_tokenType == FOUNDING_NFT_ID) {
+        } else if (_citizenType == FOUNDING_NFT_ID) {
             require(
                 foundingCitizenId <= museumSize,
                 "No more permits are issued"
             );
             foundingCitizenId = foundingCitizenId.add(1);
             _safeMint(
-                msg.sender,
+                _citizenAddress,
                 availableHousingForCitizens + foundingCitizenId - 1
             );
             return availableHousingForCitizens + foundingCitizenId - 1;
-        } else if (_tokenType == FIRST_NFT_ID) {
+        } else if (_citizenType == FIRST_NFT_ID) {
             require(firstCitizenId == 0, "No more permits are issued");
             firstCitizenId = firstCitizenId.add(1);
-            _safeMint(msg.sender, 0);
+            _safeMint(_citizenAddress, 0);
             return 0;
         }
     }
-
     function tokenURI(uint256 _citizenshipId)
         public
         view
