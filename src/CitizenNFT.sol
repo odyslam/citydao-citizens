@@ -30,10 +30,12 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
     mapping(address => uint256) private foundingCitizens;
     mapping(address => uint256) private firstCitizen;
     mapping(uint256 => uint256) private citizenNFTtoOpenSea;
+    mapping(uint256 => uint256) private citizenIdtoType;
 
-    uint256 private citizenId;
-    uint256 private foundingCitizenId;
-    uint256 private firstCitizenId;
+    uint256 private citizenCounter;
+    uint256 private foundingCitizenCounter;
+    uint256 private firstCitizenCounter;
+    uint256 private universalCitizenId;
 
     event LogEthDeposit(address);
     event CitizenLegislatureChanged(string, uint256);
@@ -175,21 +177,7 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
         view
         returns (uint256)
     {
-        require(_exists(_citizenshipId), "Incorrect citizenshipId");
-        if (
-            _citizenshipId < (availableHousingForCitizens + 1) &&
-            _citizenshipId > 0
-        ) {
-            return (CITIZEN_NFT_ID);
-        } else if (
-            _citizenshipId < availableHousingForCitizens + museumSize + 1
-        ) {
-            return (FOUNDING_NFT_ID);
-        } else if (_citizenshipId == 0) {
-            return (FIRST_NFT_ID);
-        } else {
-            revert("invalid citizenship ID");
-        }
+        return citizenIdtoType[_citizenshipId];
     }
 
     function issueCitizenship(address _citizenAddress, uint256 _citizenType)
@@ -198,29 +186,25 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
     {
         if (_citizenType == CITIZEN_NFT_ID) {
             require(
-                citizenId <= availableHousingForCitizens,
+                citizenCounter <= availableHousingForCitizens,
                 "No more permits are issued"
             );
-            citizenId = citizenId.add(1);
-            _safeMint(_citizenAddress, citizenId);
-            return citizenId;
+            citizenCounter = citizenCounter.add(1);
+
         } else if (_citizenType == FOUNDING_NFT_ID) {
             require(
-                foundingCitizenId <= museumSize,
+                foundingCitizenCounter <= museumSize,
                 "No more permits are issued"
             );
-            foundingCitizenId = foundingCitizenId.add(1);
-            _safeMint(
-                _citizenAddress,
-                availableHousingForCitizens + foundingCitizenId - 1
-            );
-            return availableHousingForCitizens + foundingCitizenId - 1;
+            foundingCitizenCounter = foundingCitizenCounter.add(1);
         } else if (_citizenType == FIRST_NFT_ID) {
-            require(firstCitizenId == 0, "No more permits are issued");
-            firstCitizenId = firstCitizenId.add(1);
-            _safeMint(_citizenAddress, 0);
-            return 0;
+            require(firstCitizenCounter == 0, "No more permits are issued");
+            firstCitizenCounter = firstCitizenCounter.add(1);
         }
+        citizenIdtoType[universalCitizenId] = _citizenType;
+        universalCitizenId = universalCitizenId.add(1);
+        _safeMint(_citizenAddress, universalCitizenId - 1);
+        return universalCitizenId - 1;
     }
     function tokenURI(uint256 _citizenshipId)
         public
@@ -231,17 +215,18 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
         string memory imageHash;
         string memory citizenship;
         if (
-            _citizenshipId < (availableHousingForCitizens + 1) &&
-            _citizenshipId > 0
+            citizenIdtoType[_citizenshipId] == 42
         ) {
             imageHash = "QmRRnuHVwhoYEHsTxzMcGdrCfthKTS65gnfUqDZkv6kbza";
             citizenship = "CityDAO Citizen";
         } else if (
-            _citizenshipId < availableHousingForCitizens + museumSize + 1
+            citizenIdtoType[_citizenshipId] ==  69
         ) {
             imageHash = "QmSrKL6fhPYU6BbYrV97AJm3aM6naGWZK95QntXXZuGQrF";
             citizenship = "CityDAO Founding Citizen";
-        } else if (_citizenshipId == 0) {
+        }  else if (
+            citizenIdtoType[_citizenshipId] ==  7
+        ) {
             imageHash = "Qmb6VmYiktfvNX3YkLosYwjUM82PcEkr2irZ4PWheYiG2b";
             citizenship = "CityDAO First Citizen";
         } else {

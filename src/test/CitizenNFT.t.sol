@@ -12,8 +12,8 @@ contract NewCityDAOCitizen is CitizenTest {
         uint256 tokenPrice = 250000000000000000;
         token1 = bob.onlineApplicationForCitizenship(tokenPrice);
         token2 = bob.onlineApplicationForCitizenship(tokenPrice);
-        assertEq(token1, 1);
-        assertEq(token2, 2);
+        assertEq(token1, 0);
+        assertEq(token2, 1);
         assertEq(citizenNFT.ownerOf(token1), address(bob));
         assertEq(address(citizenNFT).balance, 2 * tokenPrice);
     }
@@ -92,7 +92,7 @@ contract Legislate is CitizenTest {
         payable(address(bob)).transfer(10000 ether);
         uint256 token1;
         token1 = bob.onlineApplicationForCitizenship(_weiAmmount);
-        assertEq(token1, 1);
+        assertEq(address(bob), citizenNFT.ownerOf(token1));
         assertEq(citizenNFT.inquireCostOfEntry(), _weiAmmount);
     }
 
