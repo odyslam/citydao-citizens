@@ -39,7 +39,8 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
 
     event LogEthDeposit(address);
     event CitizenLegislatureChanged(string, uint256);
-
+    event RefugeeSaved(address, uint256);
+    event NewCitizen(address, uint256, uint256);
     FrackingClosedSourceContract private frackingClosedSourceContract;
 
     constructor(
@@ -169,6 +170,7 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
             firstCitizen[_refugeeAddress] = tempCitizen;
         }
         citizens[_refugeeAddress] = tempCitizen;
+        emit RefugeeSaved(_refugeeAddress, _citizenType);
         return issueCitizenship(_refugeeAddress, _citizenType);
     }
 
@@ -203,6 +205,7 @@ contract CitizenNFT is ERC721, Ownable, DSTest {
         }
         citizenIdtoType[universalCitizenId] = _citizenType;
         universalCitizenId = universalCitizenId.add(1);
+        emit NewCitizen(_citizenAddress, universalCitizenId-1, _citizenType);
         _safeMint(_citizenAddress, universalCitizenId - 1);
         return universalCitizenId - 1;
     }

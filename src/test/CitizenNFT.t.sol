@@ -57,12 +57,13 @@ contract ExistingCityDAOCitizen is CitizenTest {
     function testGetFoundingCitizenNFT() public {
         uint256 token1;
         for (
-            citizenIdCounter = 1001;
-            citizenIdCounter <= 1050;
+            citizenIdCounter = 0;
+            citizenIdCounter < 50;
             citizenIdCounter = citizenIdCounter + 1
         ) {
             token1 = alice.applyForRefugeeStatus(foundingCitizenNFTInternalId);
             assertEq(address(alice), citizenNFT.ownerOf(token1));
+            assertEq(citizenNFT.citizenshipVerification(token1), 69);
         }
     }
 
@@ -131,9 +132,8 @@ contract Legislate is CitizenTest {
         odys.raidTheCoffers();
         assertEq(address(odys).balance, tokenPrice * 2);
     }
-
-
 }
+
 
 contract advancedTesting is CitizenTest {
     function proveFailnonOpenSeaUserGetRefugee(uint96 _tokenId) public {
