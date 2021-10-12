@@ -9,7 +9,7 @@ set -eo pipefail
 . $(dirname $0)/deploy.sh
 
 # get the address
-addr=$(jq -r '.Greeter' out/addresses.json)
+addr=$(jq -r '.CitizenNFT' out/addresses.json)
 
 # the initial greeting must be empty
 greeting=$(seth call $addr 'greeting()(string)')
