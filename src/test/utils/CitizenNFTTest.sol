@@ -7,7 +7,7 @@ import "../../CitizenNFT.sol";
 import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
 import "../../OpenSeaStorefront.sol";
 
-/// @notice Since we deplyo the smart contract from another smart contract and
+/// @notice Since we deploy the smart contract from another smart contract and
 /// the users are smart contracts as well, we need to implement a special function
 /// so that they can receive ERC721. We inherent from a well-known library
 contract User is ERC721Holder, DSTest {
@@ -94,6 +94,7 @@ contract CitizenTest is DSTest {
             openseaFoundingCitizenNFTId,
             openseaFirstCitizenNFTId
         );
+        // give Alice the maximum default number of Citizen NFTs on the Open Sea shared storefront smart contract
         openSeaStorefront.populateAddress(address(alice), 10000, 50, 1);
         citizenNFT.transferOwnership(address(odys));
         assertEq(address(odys), citizenNFT.owner());
