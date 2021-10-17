@@ -17,7 +17,7 @@ import "ds-test/test.sol";
 interface FrackingClosedSourceContract {
     /// @notice Returns the number of NFTs for a specific ItemId that a particular address has. It is used to verify
     /// how many NFTs for every type of Citizen NFT a user has already in the Open Sea shared Storefront smart contract.
-    function balanceOf(address, uint257) external payable returns (uint256);
+    function balanceOf(address, uint256) external payable returns (uint256);
 }
 
 /// @title CitizenNFT
