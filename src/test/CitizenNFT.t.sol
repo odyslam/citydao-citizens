@@ -5,9 +5,8 @@ import "./utils/CitizenNFTTest.sol";
 import "../CitizenNFT.sol";
 
 contract NewCityDAOCitizen is CitizenTest {
-
-/// @notice Mint new Citizen NFTs, verify that owners are correct and balance of smart contract
-/// is equal to the value transfered for the minting.
+    /// @notice Mint new Citizen NFTs, verify that owners are correct and balance of smart contract
+    /// is equal to the value transfered for the minting.
     function testBuyCitizenNFT() public {
         payable(address(bob)).transfer(1 ether);
         uint256 token1;
@@ -20,7 +19,8 @@ contract NewCityDAOCitizen is CitizenTest {
         assertEq(citizenNFT.ownerOf(token1), address(bob));
         assertEq(address(citizenNFT).balance, 2 * tokenPrice);
     }
-/// @notice Output the tokenURI in base64 format to be used in a decoder and observe the json metadata
+
+    /// @notice Output the tokenURI in base64 format to be used in a decoder and observe the json metadata
     function testTokenURI() public {
         payable(address(bob)).transfer(1 ether);
         uint256 token1;
@@ -28,15 +28,18 @@ contract NewCityDAOCitizen is CitizenTest {
         string memory meta = citizenNFT.tokenURI(token1);
         emit log(meta);
     }
-/// @notice Bob must fail to mint an existing regular Citizen NFT, as he doesn't own any on the OpenSea smart contract
+
+    /// @notice Bob must fail to mint an existing regular Citizen NFT, as he doesn't own any on the OpenSea smart contract
     function testFailGetOpenSeaCitizenNFT() public {
         bob.applyForRefugeeStatus(34);
     }
-/// @notice Bob must fail to mint an existing Founding Citizen NFT, as he doesn't own any on the OpenSea smart contract
+
+    /// @notice Bob must fail to mint an existing Founding Citizen NFT, as he doesn't own any on the OpenSea smart contract
     function testFailGetOpenSeaFoundingCitizenNFT() public {
         bob.applyForRefugeeStatus(10045);
     }
-/// @notice  Bob must fail to mint an existing First CItizen NFT, as he doesn't own any n the OpenSea smart contract
+
+    /// @notice  Bob must fail to mint an existing First CItizen NFT, as he doesn't own any n the OpenSea smart contract
     function testFailGetOpenSeaFirstCitizenNFT() public {
         bob.applyForRefugeeStatus(0);
     }
@@ -45,7 +48,7 @@ contract NewCityDAOCitizen is CitizenTest {
 contract ExistingCityDAOCitizen is CitizenTest {
     uint256 private citizenIdCounter;
 
-/// @notice Lengthy test that attemps to mint every single CitizenNFT.
+    /// @notice Lengthy test that attemps to mint every single CitizenNFT.
     //    function testGetCitizenNFT() public {
     //        uint256 token1;
     //        for (
@@ -57,7 +60,7 @@ contract ExistingCityDAOCitizen is CitizenTest {
     //            assertEq(address(alice), citizenNFT.ownerOf(token1));
     //        }
     //    }
-/// @notice Verify that alice can mint every single founding NFT
+    /// @notice Verify that alice can mint every single founding NFT
     function testGetFoundingCitizenNFT() public {
         uint256 token1;
         for (
@@ -70,14 +73,16 @@ contract ExistingCityDAOCitizen is CitizenTest {
             assertEq(citizenNFT.citizenshipVerification(token1), 69);
         }
     }
-/// @notice Verify that alice can mint a first citizen NFT
+
+    /// @notice Verify that alice can mint a first citizen NFT
     function testGetFirstCitizenNFT() public {
         uint256 token1;
         token1 = alice.applyForRefugeeStatus(firstCitizenNFTInternalId);
         assertEq(address(alice), citizenNFT.ownerOf(token1));
     }
-/// @notice Verify that Seneca can't mint more existing Citizen NFTs that the ones that are owned
-/// by his address in the Open Sea shared storefront smart contract
+
+    /// @notice Verify that Seneca can't mint more existing Citizen NFTs that the ones that are owned
+    /// by his address in the Open Sea shared storefront smart contract
     function testFailGetMoreCitizenNFTs() public {
         User seneca = new User(citizenNFT);
         openSeaStorefront.populateAddress(address(seneca), 10, 45, 1);
@@ -86,16 +91,22 @@ contract ExistingCityDAOCitizen is CitizenTest {
             tokenId = seneca.applyForRefugeeStatus(citizenNFTInternalId);
         }
     }
-/// @notice Test the type of Citizen NFTs owned by Alice
+
+    /// @notice Test the type of Citizen NFTs owned by Alice
     function testInquireRefugeeStatus() public {
-        assertEq(citizenNFT.inquireRefugeeStatus(address(alice), 42), openSeaStorefront.balanceOf(address(alice), 23487195805935260354348650824724952235377320432154855752878351301067508033245));
+        assertEq(
+            citizenNFT.inquireRefugeeStatus(address(alice), 42),
+            openSeaStorefront.balanceOf(
+                address(alice),
+                23487195805935260354348650824724952235377320432154855752878351301067508033245
+            )
+        );
     }
 }
 
 contract Legislate is CitizenTest {
-
-/// @notice Test the change of cost for acquiring a citizen NFT.
-/// The test is fuzzed, meaning that it will test many different values as arguments
+    /// @notice Test the change of cost for acquiring a citizen NFT.
+    /// The test is fuzzed, meaning that it will test many different values as arguments
     function testOwnerChangeCitizenCost(uint96 _weiAmmount) public {
         _weiAmmount = _weiAmmount % 100000000000000000000;
         odys.legislateCostOfEntry(_weiAmmount);
@@ -105,18 +116,21 @@ contract Legislate is CitizenTest {
         assertEq(address(bob), citizenNFT.ownerOf(token1));
         assertEq(citizenNFT.inquireCostOfEntry(), _weiAmmount);
     }
-/// @notice Test the change of the maximum number regular Citizen NFTs that can be minted
-/// The test is fuzzed, meaning that it will test many different  values  as arguments
+
+    /// @notice Test the change of the maximum number regular Citizen NFTs that can be minted
+    /// The test is fuzzed, meaning that it will test many different  values  as arguments
     function testOwnerChangeCitizensNumber(uint96 _housingNumber) public {
         odys.legislateForHousing(_housingNumber);
         assertEq(citizenNFT.inquireHousingNumbers(), _housingNumber);
     }
-/// @notice Test the change of the maximum number of founding Citizen NFTs that can be minted
+
+    /// @notice Test the change of the maximum number of founding Citizen NFTs that can be minted
     function testRewriteHistory(uint96 _maxFoundingCitizens) public {
         odys.rewriteHistory(_maxFoundingCitizens);
         assertEq(citizenNFT.inquireAboutHistory(), _maxFoundingCitizens);
     }
-/// @notice If a non-owner tries to affect the cost of regular Citizen NFTs, it should fail
+
+    /// @notice If a non-owner tries to affect the cost of regular Citizen NFTs, it should fail
     function testFailnonOwnerChangeCitizenCost(uint96 _weiAmmount) public {
         _weiAmmount = _weiAmmount % 100000000000000000000;
         bob.legislateCostOfEntry(_weiAmmount);
@@ -126,12 +140,14 @@ contract Legislate is CitizenTest {
         assertEq(token1, 1);
         assertEq(citizenNFT.inquireCostOfEntry(), _weiAmmount);
     }
-/// @notice If a non-owner user tries to affect the maximum number of regular Citizen NFTs, it should fail
+
+    /// @notice If a non-owner user tries to affect the maximum number of regular Citizen NFTs, it should fail
     function testFailChangeCitizensNumber(uint256 _housingNumber) public {
         bob.legislateForHousing(_housingNumber);
         assertEq(citizenNFT.inquireHousingNumbers(), _housingNumber);
     }
-/// @notice The owner should be able to withdraw the funds that exist in the smart contract
+
+    /// @notice The owner should be able to withdraw the funds that exist in the smart contract
     function testRaidTheCoffers() public {
         payable(address(bob)).transfer(1 ether);
         uint256 token1;
@@ -144,10 +160,9 @@ contract Legislate is CitizenTest {
     }
 }
 
-
-contract advancedTesting is CitizenTest {
+contract AdvancedTesting is CitizenTest {
     /// @notice  Symbolically verify that a user without a Citizen NFT locked inside an Open Sea shared storefront Smart Contract,
-/// will always fail to mint an existing Citizen NFT
+    /// will always fail to mint an existing Citizen NFT
     function proveFailnonOpenSeaUserGetRefugee(uint96 _tokenId) public {
         bob.applyForRefugeeStatus(_tokenId);
     }

@@ -46,11 +46,11 @@ contract User is ERC721Holder, DSTest {
     function raidTheCoffers() public {
         citizenNFT.raidTheCoffers();
     }
+
     receive() external payable {}
 }
 
 /// @notice Helper test contract that sets up the testing suite.
-
 
 contract CitizenTest is DSTest {
     Hevm internal constant hevm = Hevm(HEVM_ADDRESS);
