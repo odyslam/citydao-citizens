@@ -5,8 +5,9 @@ import "ds-test/test.sol";
 import "./Hevm.sol";
 import "../../CitizenNFT.sol";
 import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
+import "../../OpenSeaStorefront.sol";
 
-/// @notice Since we deplyo the smart contract from another smart contract and
+/// @notice Since we deploy the smart contract from another smart contract and
 /// the users are smart contracts as well, we need to implement a special function
 /// so that they can receive ERC721. We inherent from a well-known library
 contract User is ERC721Holder, DSTest {
@@ -42,62 +43,14 @@ contract User is ERC721Holder, DSTest {
         citizenNFT.rewriteHistory(_maxFoundingCitizens);
     }
 
+    function raidTheCoffers() public {
+        citizenNFT.raidTheCoffers();
+    }
+
     receive() external payable {}
 }
 
 /// @notice Helper test contract that sets up the testing suite.
-
-contract OpenSeaStorefront is DSTest {
-    mapping(address => uint256) private numberOfCommonRefugees;
-    mapping(address => uint256) private numberOfHighClassRefugees;
-    mapping(address => uint256) private numberOfRoyalty;
-    uint256 private commonId;
-    uint256 private highClassId;
-    uint256 private royaltyId;
-
-    constructor() {}
-
-    function populate(
-        uint256 _commonId,
-        uint256 _highClassId,
-        uint256 _royaltyId
-    ) public {
-        commonId = _commonId;
-        highClassId = _highClassId;
-        royaltyId = _royaltyId;
-    }
-
-    function populateAddress(
-        address _testRefugee,
-        uint256 _numberOfCommonRefugees,
-        uint256 _numberOfHighClassRefugees,
-        uint256 _numberOfRoyalty
-    ) public {
-        numberOfCommonRefugees[_testRefugee] = _numberOfCommonRefugees;
-        numberOfHighClassRefugees[_testRefugee] = _numberOfHighClassRefugees;
-        numberOfRoyalty[_testRefugee] = _numberOfRoyalty;
-    }
-
-    function balanceOf(address _testRefugee, uint256 _refugeeType)
-        public
-        view
-        returns (uint256)
-    {
-        if (
-            _refugeeType ==
-            23487195805935260354348650824724952235377320432154855752878351301067508033245
-        ) {
-            return numberOfCommonRefugees[_testRefugee];
-        } else if (
-            _refugeeType ==
-            23487195805935260354348650824724952235377320432154855752878351298868484767794
-        ) {
-            return numberOfHighClassRefugees[_testRefugee];
-        } else {
-            return numberOfRoyalty[_testRefugee];
-        }
-    }
-}
 
 contract CitizenTest is DSTest {
     Hevm internal constant hevm = Hevm(HEVM_ADDRESS);
@@ -141,6 +94,7 @@ contract CitizenTest is DSTest {
             openseaFoundingCitizenNFTId,
             openseaFirstCitizenNFTId
         );
+        // give Alice the maximum default number of Citizen NFTs on the Open Sea shared storefront smart contract
         openSeaStorefront.populateAddress(address(alice), 10000, 50, 1);
         citizenNFT.transferOwnership(address(odys));
         assertEq(address(odys), citizenNFT.owner());

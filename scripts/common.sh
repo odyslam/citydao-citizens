@@ -74,9 +74,6 @@ deploy() {
     # deploy
     ADDRESS=$(dapp create $NAME $ARGS -- --gas $GAS --rpc-url $ETH_RPC_URL)
 
-    # save the addrs to the json
-    # TODO: It'd be nice if we could evolve this into a minimal versioning system
-    # e.g. via commit / chainid etc.
     saveContract $NAME $ADDRESS
 
     echo $ADDRESS
