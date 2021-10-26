@@ -37,6 +37,7 @@ curl -L https://nixos.org/nix/install | sh
 
 ```sh
 curl https://dapp.tools/install | sh
+```
 
 ### Security Notes
 
