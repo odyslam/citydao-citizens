@@ -53,7 +53,7 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
     TokenRoyalty public defaultRoyalty;
     mapping(uint256 => TokenRoyalty) private _tokenRoyalties;
     // NFT metadata
-    mapping(uint256 => string) private imageHashes;
+    mapping(uint256 => string) private tokenURIs;
     mapping(uint256 => string) private citizenNFTDescriptions;
 
     /// @notice Initialise CitizenNFT smart contract with the appropriate address and ItemIds of the
@@ -63,9 +63,9 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
         ERC1155("")
     {
         defaultRoyalty = TokenRoyalty(_royaltyRecipient, _royaltyBPS);
-        imageHashes[CITIZEN_NFT_ID] = "QmRRnuHVwhoYEHsTxzMcGdrCfthKTS66gnfUqDZkv6kbza";
-        imageHashes[FOUNDING_NFT_ID] = "QmSrKL6fhPYU6BbYrV97AJm3aM6naGWZK95QntXXZuGQrF";
-        imageHashes[FIRST_NFT_ID] = "Qmb6VmYiktfvNX3YkLosYwjUM82PcEkr2irZ4PWheYiG2b";
+        tokenURIs[CITIZEN_NFT_ID] = "ipfs://QmRRnuHVwhoYEHsTxzMcGdrCfthKTS66gnfUqDZkv6kbza";
+        tokenURIs[FOUNDING_NFT_ID] = "ipfs://QmSrKL6fhPYU6BbYrV97AJm3aM6naGWZK95QntXXZuGQrF";
+        tokenURIs[FIRST_NFT_ID] = "ipfs://Qmb6VmYiktfvNX3YkLosYwjUM82PcEkr2irZ4PWheYiG2b";
         citizenNFTDescriptions[CITIZEN_NFT_ID] = "CityDAO Citizen";
         citizenNFTDescriptions[FOUNDING_NFT_ID] = "Founding CityDAO Citizen";
         citizenNFTDescriptions[FIRST_NFT_ID] = "CityDAO First Citizen";
@@ -215,8 +215,8 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
                         '", ',
                         '"description" : ',
                         '"A Citizen of CityDAO holds governance in the operations and activities of CityDAO.",',
-                        '"image": "ipfs://',
-                         imageHashes[_citizenNFTId],
+                        '"image": "',
+                         tokenURIs[_citizenNFTId],
                         '"'
                         "}"
                     )
@@ -226,14 +226,14 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
         return string(abi.encodePacked("data:application/json;base64,", json));
     }
     function changeURIHashes(
-        string[] calldata _imageHashes,
+        string[] calldata _tokenURIs,
         uint256[] calldata _citizenNFTIds
     )
         external
         onlyOwner
     {
-        for(uint256 i = 0; i<_imageHashes.length; i++){
-            imageHashes[_citizenNFTIds[i]] = _imageHashes[i];
+        for(uint256 i = 0; i<_tokenURIs.length; i++){
+            tokenURIs[_citizenNFTIds[i]] = _tokenURIs[i];
             }
     }
 

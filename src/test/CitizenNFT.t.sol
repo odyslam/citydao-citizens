@@ -33,7 +33,7 @@ contract NewCityDAOCitizen is CitizenTest {
         tokenIds.push(citizenNFTInternalId);
         odys.changeURIHashes(hashes, tokenIds);
         string memory meta = citizenNFT.uri(citizenNFTInternalId);
-        assertEq(meta, "data:application/json;base64,eyAibmFtZSI6ICJDaXR5REFPIENpdGl6ZW4iLCAiZGVzY3JpcHRpb24iIDogIkEgQ2l0aXplbiBvZiBDaXR5REFPIGhvbGRzIGdvdmVybmFuY2UgaW4gdGhlIG9wZXJhdGlvbnMgYW5kIGFjdGl2aXRpZXMgb2YgQ2l0eURBTy4iLCJpbWFnZSI6ICJpcGZzOi8vcmVrdCJ9");
+        assertEq(meta, "data:application/json;base64,eyAibmFtZSI6ICJDaXR5REFPIENpdGl6ZW4iLCAiZGVzY3JpcHRpb24iIDogIkEgQ2l0aXplbiBvZiBDaXR5REFPIGhvbGRzIGdvdmVybmFuY2UgaW4gdGhlIG9wZXJhdGlvbnMgYW5kIGFjdGl2aXRpZXMgb2YgQ2l0eURBTy4iLCJpbWFnZSI6ICJyZWt0In0=");
         emit log(meta);
     }
 }
