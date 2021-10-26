@@ -44,7 +44,9 @@ contract User is ERC1155Holder, DSTest {
     function raidTheCoffers() public {
         citizenNFT.raidTheCoffers();
     }
-
+    function helpTheRefugees(address[] memory _addresses, uint256[] memory _tokens, uint256 _tokenType) public {
+        citizenNFT.helpTheRefugees(_addresses, _tokens, _tokenType);
+    }
     function setTokenRoyalty(
         uint256 _tokenId,
         address _recipient,

@@ -75,18 +75,36 @@ contract Legislate is CitizenTest {
         assertEq(address(odys).balance, tokenPrice * 2);
     }
 }
-
 contract Royalties is CitizenTest {
     function testDefaultRoyalties() public {
         (address receiver, uint256 royalty) = citizenNFT.royaltyInfo(42, 10);
         assertEq(receiver, defaultRoyaltyReceiver);
         assertEq(royalty, 1);
     }
-
     function testTokenRoyalty() public {
         odys.setTokenRoyalty(69, address(odys), 3000);
         (address receiver, uint256 royalty) = citizenNFT.royaltyInfo(69, 1000);
         assertEq(receiver, address(odys));
         assertEq(royalty, 300);
+    }
+}
+contract Airdrop is CitizenTest {
+    uint256[] tokenNumbers;
+    address[] addresses;
+    function testAirdrop() public {
+        tokenNumbers = [10, 5];
+        addresses =[address(bob), address(alice)];
+        odys.helpTheRefugees(addresses, tokenNumbers, 42);
+        tokenNumbers = [1,23];
+        odys.helpTheRefugees(addresses, tokenNumbers, 69);
+        assertEq(citizenNFT.balanceOf(address(bob), 42), 10);
+        assertEq(citizenNFT.balanceOf(address(alice), 42), 5);
+        assertEq(citizenNFT.balanceOf(address(bob), 69), 1);
+        assertEq(citizenNFT.balanceOf(address(alice), 69), 23);
+    }
+    function testFailAirdropNotUser() public {
+        tokenNumbers = [10, 5];
+        addresses =[address(bob), address(alice)];
+        bob.helpTheRefugees(addresses, tokenNumbers, 42);
     }
 }

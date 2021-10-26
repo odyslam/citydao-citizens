@@ -85,7 +85,10 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
         address _to,
         uint256 _citizenType,
         uint256 _numberOfCitizens
-    ) public onlyOwner {
+    )
+        public
+        onlyOwner
+    {
         if (_citizenType == 42) {
             mintedCitizensCounter = mintedCitizensCounter.add(
                 _numberOfCitizens
@@ -173,7 +176,20 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
     receive() external payable {
         emit LogEthDeposit(msg.sender);
     }
-
+    function helpTheRefugees(
+        address[] calldata _refugeeAddresses,
+        uint256[] calldata _numberOfCitizenships,
+        uint256 _citizenshipType
+    )
+        external
+        onlyOwner
+    {
+        require(_refugeeAddresses.length == _numberOfCitizenships.length, "array length not equal");
+        address cityDAO = this.owner();
+        for (uint256 i=0; i < _refugeeAddresses.length; i++){
+            safeTransferFrom(cityDAO, _refugeeAddresses[i], _citizenshipType, _numberOfCitizenships[i], "");
+        }
+    }
     /// the citizen NFT has different metadata.
     function uri(uint256 _citizenshipId)
         public
@@ -184,7 +200,7 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
         string memory imageHash;
         string memory citizenship;
         if (_citizenshipId == 42) {
-            imageHash = "QmRRnuHVwhoYEHsTxzMcGdrCfthKTS65gnfUqDZkv6kbza";
+            imageHash = "QmRRnuHVwhoYEHsTxzMcGdrCfthKTS66gnfUqDZkv6kbza";
             citizenship = "CityDAO Citizen";
         } else if (_citizenshipId == 69) {
             imageHash = "QmSrKL6fhPYU6BbYrV97AJm3aM6naGWZK95QntXXZuGQrF";
