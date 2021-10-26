@@ -49,8 +49,12 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
         address recipient;
         uint16 bps;
     }
+
     TokenRoyalty public defaultRoyalty;
     mapping(uint256 => TokenRoyalty) private _tokenRoyalties;
+    // NFT metadata
+    mapping(uint256 => string) private imageHashes;
+    mapping(uint256 => string) private citizenNFTDescriptions;
 
     /// @notice Initialise CitizenNFT smart contract with the appropriate address and ItemIds of the
     /// Open Sea shared storefront smart contract and the Citizen NFTs that are locked in it.
@@ -59,6 +63,12 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
         ERC1155("")
     {
         defaultRoyalty = TokenRoyalty(_royaltyRecipient, _royaltyBPS);
+        imageHashes[CITIZEN_NFT_ID] = "QmRRnuHVwhoYEHsTxzMcGdrCfthKTS66gnfUqDZkv6kbza";
+        imageHashes[FOUNDING_NFT_ID] = "QmSrKL6fhPYU6BbYrV97AJm3aM6naGWZK95QntXXZuGQrF";
+        imageHashes[FIRST_NFT_ID] = "Qmb6VmYiktfvNX3YkLosYwjUM82PcEkr2irZ4PWheYiG2b";
+        citizenNFTDescriptions[CITIZEN_NFT_ID] = "CityDAO Citizen";
+        citizenNFTDescriptions[FOUNDING_NFT_ID] = "Founding CityDAO Citizen";
+        citizenNFTDescriptions[FIRST_NFT_ID] = "CityDAO First Citizen";
     }
 
     /// @notice Transfer regular Citizen NFTs from the CityDAO owner address to the user.
@@ -80,7 +90,7 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
             ""
         );
     }
-
+///@notice Mint new citizenNFTs to an address, usually that of CityDAO.
     function issueNewCitizenships(
         address _to,
         uint256 _citizenType,
@@ -106,7 +116,6 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
         }
         _mint(_to, _citizenType, _numberOfCitizens, "");
     }
-
     function initialCitizenship() external onlyOwner {
         issueNewCitizenships(
             msg.sender,
@@ -190,38 +199,24 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
             safeTransferFrom(cityDAO, _refugeeAddresses[i], _citizenshipType, _numberOfCitizenships[i], "");
         }
     }
-    /// the citizen NFT has different metadata.
-    function uri(uint256 _citizenshipId)
+    /// @notice returns the uri metadata. Used by marketplaces and wallets to show the NFT
+    function uri(uint256 _citizenNFTId)
         public
-        pure
+        view
         override
         returns (string memory)
     {
-        string memory imageHash;
-        string memory citizenship;
-        if (_citizenshipId == 42) {
-            imageHash = "QmRRnuHVwhoYEHsTxzMcGdrCfthKTS66gnfUqDZkv6kbza";
-            citizenship = "CityDAO Citizen";
-        } else if (_citizenshipId == 69) {
-            imageHash = "QmSrKL6fhPYU6BbYrV97AJm3aM6naGWZK95QntXXZuGQrF";
-            citizenship = "CityDAO Founding Citizen";
-        } else if (_citizenshipId == 7) {
-            imageHash = "Qmb6VmYiktfvNX3YkLosYwjUM82PcEkr2irZ4PWheYiG2b";
-            citizenship = "CityDAO First Citizen";
-        } else {
-            revert(Errors.invalidCitizenshipId);
-        }
         string memory json = Base64.encode(
             bytes(
                 string(
                     abi.encodePacked(
                         '{ "name": "',
-                        citizenship,
+                        citizenNFTDescriptions[_citizenNFTId],
                         '", ',
                         '"description" : ',
                         '"A Citizen of CityDAO holds governance in the operations and activities of CityDAO.",',
                         '"image": "ipfs://',
-                        imageHash,
+                         imageHashes[_citizenNFTId],
                         '"'
                         "}"
                     )
@@ -229,6 +224,17 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
             )
         );
         return string(abi.encodePacked("data:application/json;base64,", json));
+    }
+    function changeURIHashes(
+        string[] calldata _imageHashes,
+        uint256[] calldata _citizenNFTIds
+    )
+        external
+        onlyOwner
+    {
+        for(uint256 i = 0; i<_imageHashes.length; i++){
+            imageHashes[_citizenNFTIds[i]] = _imageHashes[i];
+            }
     }
 
     /// @dev Define the fee for the token specify

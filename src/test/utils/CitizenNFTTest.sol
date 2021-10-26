@@ -54,7 +54,9 @@ contract User is ERC1155Holder, DSTest {
     ) public {
         citizenNFT.setTokenRoyalty(_tokenId, _recipient, _bps);
     }
-
+    function changeURIHashes(string[] calldata _hashes, uint256[] calldata _tokenIds) public{
+        citizenNFT.changeURIHashes(_hashes, _tokenIds);
+    }
     receive() external payable {}
 }
 

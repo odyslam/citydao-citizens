@@ -7,6 +7,9 @@ import "../CitizenNFT.sol";
 contract NewCityDAOCitizen is CitizenTest {
     /// @notice Mint new Citizen NFTs, verify that owners are correct and balance of smart contract
     /// is equal to the value transfered for the minting.
+
+    string[] hashes;
+    uint256[] tokenIds;
     function testBuyCitizenNFT() public {
         payable(address(bob)).transfer(1 ether);
         uint256 tokenPrice = 250000000000000000;
@@ -21,6 +24,16 @@ contract NewCityDAOCitizen is CitizenTest {
         payable(address(bob)).transfer(1 ether);
         bob.onlineApplicationForCitizenship(250000000000000000, 1);
         string memory meta = citizenNFT.uri(citizenNFTInternalId);
+        assertEq(meta, "data:application/json;base64,eyAibmFtZSI6ICJDaXR5REFPIENpdGl6ZW4iLCAiZGVzY3JpcHRpb24iIDogIkEgQ2l0aXplbiBvZiBDaXR5REFPIGhvbGRzIGdvdmVybmFuY2UgaW4gdGhlIG9wZXJhdGlvbnMgYW5kIGFjdGl2aXRpZXMgb2YgQ2l0eURBTy4iLCJpbWFnZSI6ICJpcGZzOi8vUW1SUm51SFZ3aG9ZRUhzVHh6TWNHZHJDZnRoS1RTNjZnbmZVcURaa3Y2a2J6YSJ9");
+        emit log(meta);
+    }
+
+    function testChangeTokenURI() public {
+        hashes.push("rekt");
+        tokenIds.push(citizenNFTInternalId);
+        odys.changeURIHashes(hashes, tokenIds);
+        string memory meta = citizenNFT.uri(citizenNFTInternalId);
+        assertEq(meta, "data:application/json;base64,eyAibmFtZSI6ICJDaXR5REFPIENpdGl6ZW4iLCAiZGVzY3JpcHRpb24iIDogIkEgQ2l0aXplbiBvZiBDaXR5REFPIGhvbGRzIGdvdmVybmFuY2UgaW4gdGhlIG9wZXJhdGlvbnMgYW5kIGFjdGl2aXRpZXMgb2YgQ2l0eURBTy4iLCJpbWFnZSI6ICJpcGZzOi8vcmVrdCJ9");
         emit log(meta);
     }
 }
