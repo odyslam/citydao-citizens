@@ -39,7 +39,9 @@ contract User is ERC1155Holder, DSTest {
     function raidTheCoffers() public {
         citizenNFT.raidTheCoffers();
     }
-
+    function setTokenRoyalty(uint256 _tokenId, address _recipient, uint16 _bps) public {
+        citizenNFT.setTokenRoyalty( _tokenId, _recipient, _bps);
+    }
     receive() external payable {}
 }
 
@@ -53,23 +55,20 @@ contract CitizenTest is DSTest, ERC1155Holder {
     User internal alice;
     User internal bob;
     User internal odys;
+    address defaultRoyaltyReceiver;
     // Internal Ids
     uint256 citizenNFTInternalId = 42;
     uint256 foundingCitizenNFTInternalId = 69;
     uint256 firstCitizenNFTInternalId = 7;
     function setUp() public virtual {
+        defaultRoyaltyReceiver = address(this);
         citizenNFT = new CitizenNFT(
-            ,
+            defaultRoyaltyReceiver,
             1000
         );
         bob = new User(citizenNFT);
         alice = new User(citizenNFT);
         odys = new User(citizenNFT);
-        openSeaStorefront.populate(
-            openseaCitizenNFTId,
-            openseaFoundingCitizenNFTId,
-            openseaFirstCitizenNFTId
-        );
         // give Alice the maximum default number of Citizen NFTs on the Open Sea shared storefront smart contract
         citizenNFT.transferOwnership(address(odys));
         odys.initialCitizenship();

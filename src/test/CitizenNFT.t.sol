@@ -72,9 +72,16 @@ contract Legislate is CitizenTest {
         assertEq(address(odys).balance, tokenPrice * 2);
     }
 }
-
 contract Royalties is CitizenTest {
-
     function testDefaultRoyalties() public {
-        assertEq(
+        (address receiver, uint256 royalty) = citizenNFT.royaltyInfo(42, 10);
+        assertEq(receiver, defaultRoyaltyReceiver);
+        assertEq(royalty, 1);
     }
+    function testTokenRoyalty() public {
+        odys.setTokenRoyalty(69, address(odys), 3000);
+        (address receiver, uint256 royalty) = citizenNFT.royaltyInfo(69, 1000);
+        assertEq(receiver, address(odys));
+        assertEq(royalty, 300);
+    }
+}
