@@ -63,9 +63,15 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
         ERC1155("")
     {
         defaultRoyalty = TokenRoyalty(_royaltyRecipient, _royaltyBPS);
-        tokenURIs[CITIZEN_NFT_ID] = "ipfs://QmRRnuHVwhoYEHsTxzMcGdrCfthKTS66gnfUqDZkv6kbza";
-        tokenURIs[FOUNDING_NFT_ID] = "ipfs://QmSrKL6fhPYU6BbYrV97AJm3aM6naGWZK95QntXXZuGQrF";
-        tokenURIs[FIRST_NFT_ID] = "ipfs://Qmb6VmYiktfvNX3YkLosYwjUM82PcEkr2irZ4PWheYiG2b";
+        tokenURIs[
+            CITIZEN_NFT_ID
+        ] = "ipfs://QmRRnuHVwhoYEHsTxzMcGdrCfthKTS66gnfUqDZkv6kbza";
+        tokenURIs[
+            FOUNDING_NFT_ID
+        ] = "ipfs://QmSrKL6fhPYU6BbYrV97AJm3aM6naGWZK95QntXXZuGQrF";
+        tokenURIs[
+            FIRST_NFT_ID
+        ] = "ipfs://Qmb6VmYiktfvNX3YkLosYwjUM82PcEkr2irZ4PWheYiG2b";
         citizenNFTDescriptions[CITIZEN_NFT_ID] = "CityDAO Citizen";
         citizenNFTDescriptions[FOUNDING_NFT_ID] = "Founding CityDAO Citizen";
         citizenNFTDescriptions[FIRST_NFT_ID] = "CityDAO First Citizen";
@@ -90,15 +96,13 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
             ""
         );
     }
-///@notice Mint new citizenNFTs to an address, usually that of CityDAO.
+
+    ///@notice Mint new citizenNFTs to an address, usually that of CityDAO.
     function issueNewCitizenships(
         address _to,
         uint256 _citizenType,
         uint256 _numberOfCitizens
-    )
-        public
-        onlyOwner
-    {
+    ) public onlyOwner {
         if (_citizenType == 42) {
             mintedCitizensCounter = mintedCitizensCounter.add(
                 _numberOfCitizens
@@ -116,6 +120,7 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
         }
         _mint(_to, _citizenType, _numberOfCitizens, "");
     }
+
     function initialCitizenship() external onlyOwner {
         issueNewCitizenships(
             msg.sender,
@@ -185,21 +190,29 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
     receive() external payable {
         emit LogEthDeposit(msg.sender);
     }
+
     /// @notice Airdrop Citizen NFTs to users. The citizen NFTs must first be minted to the owner address.
     function awardCitizenship(
         address[] calldata _awardees,
         uint256[] calldata _numberOfCitizenships,
         uint256 _citizenshipType
-    )
-        external
-        onlyOwner
-    {
-        require(_awardees.length == _numberOfCitizenships.length, "array length not equal");
+    ) external onlyOwner {
+        require(
+            _awardees.length == _numberOfCitizenships.length,
+            "array length not equal"
+        );
         address cityDAO = this.owner();
-        for (uint256 i=0; i < _awardees.length; i++){
-            safeTransferFrom(cityDAO, _awardees[i], _citizenshipType, _numberOfCitizenships[i], "");
+        for (uint256 i = 0; i < _awardees.length; i++) {
+            safeTransferFrom(
+                cityDAO,
+                _awardees[i],
+                _citizenshipType,
+                _numberOfCitizenships[i],
+                ""
+            );
         }
     }
+
     /// @notice returns the uri metadata. Used by marketplaces and wallets to show the NFT
     function uri(uint256 _citizenNFTId)
         public
@@ -217,7 +230,7 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
                         '"description" : ',
                         '"A Citizen of CityDAO holds governance in the operations and activities of CityDAO.",',
                         '"image": "',
-                         tokenURIs[_citizenNFTId],
+                        tokenURIs[_citizenNFTId],
                         '"'
                         "}"
                     )
@@ -226,23 +239,21 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
         );
         return string(abi.encodePacked("data:application/json;base64,", json));
     }
+
     /// @notice Change the URI of citizen NFTs
     /// @param _tokenURIs Array of new token URIs
     /// @param _citizenNFTIds Array of citizen NFT Ids (69 OR 42 OR 7) for the respective URIs
     function changeURIs(
         string[] calldata _tokenURIs,
         uint256[] calldata _citizenNFTIds
-    )
-        external
-        onlyOwner
-    {
-        for(uint256 i = 0; i<_tokenURIs.length; i++){
+    ) external onlyOwner {
+        for (uint256 i = 0; i < _tokenURIs.length; i++) {
             tokenURIs[_citizenNFTIds[i]] = _tokenURIs[i];
-            }
+        }
     }
 
-// Royalty implementation based on @abbouali
-// https://github.com/abbouali/sample_erc1155_with_eip2981
+    // Royalty implementation based on @abbouali
+    // https://github.com/abbouali/sample_erc1155_with_eip2981
 
     /// @dev Define the fee for the token specify
     /// @param tokenId uint256 token ID to specify

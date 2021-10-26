@@ -10,6 +10,7 @@ contract NewCityDAOCitizen is CitizenTest {
 
     string[] hashes;
     uint256[] tokenIds;
+
     function testBuyCitizenNFT() public {
         payable(address(bob)).transfer(1 ether);
         uint256 tokenPrice = 250000000000000000;
@@ -24,7 +25,11 @@ contract NewCityDAOCitizen is CitizenTest {
         payable(address(bob)).transfer(1 ether);
         bob.onlineApplicationForCitizenship(250000000000000000, 1);
         string memory meta = citizenNFT.uri(citizenNFTInternalId);
-        assertEq(meta, "data:application/json;base64,eyAibmFtZSI6ICJDaXR5REFPIENpdGl6ZW4iLCAiZGVzY3JpcHRpb24iIDogIkEgQ2l0aXplbiBvZiBDaXR5REFPIGhvbGRzIGdvdmVybmFuY2UgaW4gdGhlIG9wZXJhdGlvbnMgYW5kIGFjdGl2aXRpZXMgb2YgQ2l0eURBTy4iLCJpbWFnZSI6ICJpcGZzOi8vUW1SUm51SFZ3aG9ZRUhzVHh6TWNHZHJDZnRoS1RTNjZnbmZVcURaa3Y2a2J6YSJ9");
+        string memory uri = "data:application/json;base64,eyAibmFtZSI6ICJDaXR5REFPIENpdGl6ZW4iLCAiZGVzY3JpcHRpb24iIDogIkEgQ2l0aXplbiBvZiBDaX"
+        "R5REFPIGhvbGRzIGdvdmVybmFuY2UgaW4gdGhlIG9wZXJhdGlvbnMgYW5kIGFjdGl2aXRpZXMgb2YgQ2l0eURBTy4iLCJpbWFnZSI6ICJpcGZzOi8vUW1S"
+        "Um51SFZ3aG9ZRUhzVHh6TWNHZHJDZnRoS1RTNjZnbmZVcURaa3Y2a2J6YSJ9";
+
+        assertEq(meta, uri);
         emit log(meta);
     }
 
@@ -33,7 +38,9 @@ contract NewCityDAOCitizen is CitizenTest {
         tokenIds.push(citizenNFTInternalId);
         odys.changeURIs(hashes, tokenIds);
         string memory meta = citizenNFT.uri(citizenNFTInternalId);
-        assertEq(meta, "data:application/json;base64,eyAibmFtZSI6ICJDaXR5REFPIENpdGl6ZW4iLCAiZGVzY3JpcHRpb24iIDogIkEgQ2l0aXplbiBvZiBDaXR5REFPIGhvbGRzIGdvdmVybmFuY2UgaW4gdGhlIG9wZXJhdGlvbnMgYW5kIGFjdGl2aXRpZXMgb2YgQ2l0eURBTy4iLCJpbWFnZSI6ICJyZWt0In0=");
+        string memory uri = "data:application/json;base64,eyAibmFtZSI6ICJDaXR5REFPIENpdGl6ZW4iLCAiZGVzY3JpcHRpb24iIDogIkEgQ2l0aXplbiBvZiBDa"
+        "XR5REFPIGhvbGRzIGdvdmVybmFuY2UgaW4gdGhlIG9wZXJhdGlvbnMgYW5kIGFjdGl2aXRpZXMgb2YgQ2l0eURBTy4iLCJpbWFnZSI6ICJyZWt0In0=";
+        assertEq(meta, uri);
         emit log(meta);
     }
 }
@@ -88,12 +95,14 @@ contract Legislate is CitizenTest {
         assertEq(address(odys).balance, tokenPrice * 2);
     }
 }
+
 contract Royalties is CitizenTest {
     function testDefaultRoyalties() public {
         (address receiver, uint256 royalty) = citizenNFT.royaltyInfo(42, 10);
         assertEq(receiver, defaultRoyaltyReceiver);
         assertEq(royalty, 1);
     }
+
     function testTokenRoyalty() public {
         odys.setTokenRoyalty(69, address(odys), 3000);
         (address receiver, uint256 royalty) = citizenNFT.royaltyInfo(69, 1000);
@@ -105,20 +114,22 @@ contract Royalties is CitizenTest {
 contract Airdrop is CitizenTest {
     uint256[] tokenNumbers;
     address[] addresses;
+
     function testAirdrop() public {
         tokenNumbers = [10, 5];
-        addresses =[address(bob), address(alice)];
+        addresses = [address(bob), address(alice)];
         odys.awardCitizenship(addresses, tokenNumbers, 42);
-        tokenNumbers = [1,23];
+        tokenNumbers = [1, 23];
         odys.awardCitizenship(addresses, tokenNumbers, 69);
         assertEq(citizenNFT.balanceOf(address(bob), 42), 10);
         assertEq(citizenNFT.balanceOf(address(alice), 42), 5);
         assertEq(citizenNFT.balanceOf(address(bob), 69), 1);
         assertEq(citizenNFT.balanceOf(address(alice), 69), 23);
     }
+
     function testFailAirdropNotUser() public {
         tokenNumbers = [10, 5];
-        addresses =[address(bob), address(alice)];
+        addresses = [address(bob), address(alice)];
         bob.awardCitizenship(addresses, tokenNumbers, 42);
     }
 }
