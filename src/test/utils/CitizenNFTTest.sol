@@ -44,8 +44,8 @@ contract User is ERC1155Holder, DSTest {
     function raidTheCoffers() public {
         citizenNFT.raidTheCoffers();
     }
-    function helpTheRefugees(address[] memory _addresses, uint256[] memory _tokens, uint256 _tokenType) public {
-        citizenNFT.helpTheRefugees(_addresses, _tokens, _tokenType);
+    function awardCitizenship(address[] memory _addresses, uint256[] memory _tokens, uint256 _tokenType) public {
+        citizenNFT.awardCitizenship(_addresses, _tokens, _tokenType);
     }
     function setTokenRoyalty(
         uint256 _tokenId,
@@ -54,8 +54,8 @@ contract User is ERC1155Holder, DSTest {
     ) public {
         citizenNFT.setTokenRoyalty(_tokenId, _recipient, _bps);
     }
-    function changeURIHashes(string[] calldata _hashes, uint256[] calldata _tokenIds) public{
-        citizenNFT.changeURIHashes(_hashes, _tokenIds);
+    function changeURIs(string[] calldata _hashes, uint256[] calldata _tokenIds) public{
+        citizenNFT.changeURIs(_hashes, _tokenIds);
     }
     receive() external payable {}
 }

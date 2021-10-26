@@ -31,7 +31,7 @@ contract NewCityDAOCitizen is CitizenTest {
     function testChangeTokenURI() public {
         hashes.push("rekt");
         tokenIds.push(citizenNFTInternalId);
-        odys.changeURIHashes(hashes, tokenIds);
+        odys.changeURIs(hashes, tokenIds);
         string memory meta = citizenNFT.uri(citizenNFTInternalId);
         assertEq(meta, "data:application/json;base64,eyAibmFtZSI6ICJDaXR5REFPIENpdGl6ZW4iLCAiZGVzY3JpcHRpb24iIDogIkEgQ2l0aXplbiBvZiBDaXR5REFPIGhvbGRzIGdvdmVybmFuY2UgaW4gdGhlIG9wZXJhdGlvbnMgYW5kIGFjdGl2aXRpZXMgb2YgQ2l0eURBTy4iLCJpbWFnZSI6ICJyZWt0In0=");
         emit log(meta);
@@ -101,15 +101,16 @@ contract Royalties is CitizenTest {
         assertEq(royalty, 300);
     }
 }
+
 contract Airdrop is CitizenTest {
     uint256[] tokenNumbers;
     address[] addresses;
     function testAirdrop() public {
         tokenNumbers = [10, 5];
         addresses =[address(bob), address(alice)];
-        odys.helpTheRefugees(addresses, tokenNumbers, 42);
+        odys.awardCitizenship(addresses, tokenNumbers, 42);
         tokenNumbers = [1,23];
-        odys.helpTheRefugees(addresses, tokenNumbers, 69);
+        odys.awardCitizenship(addresses, tokenNumbers, 69);
         assertEq(citizenNFT.balanceOf(address(bob), 42), 10);
         assertEq(citizenNFT.balanceOf(address(alice), 42), 5);
         assertEq(citizenNFT.balanceOf(address(bob), 69), 1);
@@ -118,6 +119,6 @@ contract Airdrop is CitizenTest {
     function testFailAirdropNotUser() public {
         tokenNumbers = [10, 5];
         addresses =[address(bob), address(alice)];
-        bob.helpTheRefugees(addresses, tokenNumbers, 42);
+        bob.awardCitizenship(addresses, tokenNumbers, 42);
     }
 }

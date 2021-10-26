@@ -185,18 +185,19 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
     receive() external payable {
         emit LogEthDeposit(msg.sender);
     }
-    function helpTheRefugees(
-        address[] calldata _refugeeAddresses,
+    /// @notice Airdrop Citizen NFTs to users. The citizen NFTs must first be minted to the owner address.
+    function awardCitizenship(
+        address[] calldata _awardees,
         uint256[] calldata _numberOfCitizenships,
         uint256 _citizenshipType
     )
         external
         onlyOwner
     {
-        require(_refugeeAddresses.length == _numberOfCitizenships.length, "array length not equal");
+        require(_awardees.length == _numberOfCitizenships.length, "array length not equal");
         address cityDAO = this.owner();
-        for (uint256 i=0; i < _refugeeAddresses.length; i++){
-            safeTransferFrom(cityDAO, _refugeeAddresses[i], _citizenshipType, _numberOfCitizenships[i], "");
+        for (uint256 i=0; i < _awardees.length; i++){
+            safeTransferFrom(cityDAO, _awardees[i], _citizenshipType, _numberOfCitizenships[i], "");
         }
     }
     /// @notice returns the uri metadata. Used by marketplaces and wallets to show the NFT
@@ -225,7 +226,10 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
         );
         return string(abi.encodePacked("data:application/json;base64,", json));
     }
-    function changeURIHashes(
+    /// @notice Change the URI of citizen NFTs
+    /// @param _tokenURIs Array of new token URIs
+    /// @param _citizenNFTIds Array of citizen NFT Ids (69 OR 42 OR 7) for the respective URIs
+    function changeURIs(
         string[] calldata _tokenURIs,
         uint256[] calldata _citizenNFTIds
     )
@@ -236,6 +240,9 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
             tokenURIs[_citizenNFTIds[i]] = _tokenURIs[i];
             }
     }
+
+// Royalty implementation based on @abbouali
+// https://github.com/abbouali/sample_erc1155_with_eip2981
 
     /// @dev Define the fee for the token specify
     /// @param tokenId uint256 token ID to specify
