@@ -19,7 +19,7 @@ library Errors {
 /// @notice An ERC721 NFT that replaces the Citizen NFTs that are issued by the OpenSea Storefront Smart contract.
 /// This smart contract enables users to either mint a new CitizenNFT or
 /// "transfer" their Citizen NFTs from the OpenSea smart contract to this one.
-contract CitizenNFT is ERC1155, Ownable, DSTest {
+contract CitizenNFT is ERC1155, Ownable {
     // We use safemath to avoid under and over flows
     using SafeMath for uint256;
 
