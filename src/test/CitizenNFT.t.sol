@@ -49,7 +49,10 @@ contract Legislate is CitizenTest {
     /// @notice Test the change of the maximum number of founding Citizen NFTs that can be minted
     function testRewriteHistory(uint96 _numberOfNewFoundingCitizens) public {
         odys.rewriteHistory(_numberOfNewFoundingCitizens);
-        assertEq(citizenNFT.inquireAboutHistory(), uint256(_numberOfNewFoundingCitizens) + 50);
+        assertEq(
+            citizenNFT.inquireAboutHistory(),
+            uint256(_numberOfNewFoundingCitizens) + 50
+        );
     }
 
     /// @notice If a non-owner tries to affect the cost of regular Citizen NFTs, it should fail
@@ -67,17 +70,19 @@ contract Legislate is CitizenTest {
     function testRaidTheCoffers() public {
         payable(address(bob)).transfer(1 ether);
         uint256 tokenPrice = 250000000000000000;
-        bob.onlineApplicationForCitizenship(tokenPrice,2);
+        bob.onlineApplicationForCitizenship(tokenPrice, 2);
         odys.raidTheCoffers();
         assertEq(address(odys).balance, tokenPrice * 2);
     }
 }
+
 contract Royalties is CitizenTest {
     function testDefaultRoyalties() public {
         (address receiver, uint256 royalty) = citizenNFT.royaltyInfo(42, 10);
         assertEq(receiver, defaultRoyaltyReceiver);
         assertEq(royalty, 1);
     }
+
     function testTokenRoyalty() public {
         odys.setTokenRoyalty(69, address(odys), 3000);
         (address receiver, uint256 royalty) = citizenNFT.royaltyInfo(69, 1000);

@@ -51,15 +51,17 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
     }
     TokenRoyalty public defaultRoyalty;
     mapping(uint256 => TokenRoyalty) private _tokenRoyalties;
+
     /// @notice Initialise CitizenNFT smart contract with the appropriate address and ItemIds of the
     /// Open Sea shared storefront smart contract and the Citizen NFTs that are locked in it.
-    constructor(
-        address _royaltyRecipient,
-        uint16 _royaltyBPS
-    ) Ownable() ERC1155("") {
+    constructor(address _royaltyRecipient, uint16 _royaltyBPS)
+        Ownable()
+        ERC1155("")
+    {
         defaultRoyalty = TokenRoyalty(_royaltyRecipient, _royaltyBPS);
     }
-     /// @notice Transfer regular Citizen NFTs from the CityDAO owner address to the user.
+
+    /// @notice Transfer regular Citizen NFTs from the CityDAO owner address to the user.
     /// @param _citizenNumber How many citizenNFTs will be transfered.
     /// The user must include in the transaction, the appropriate number of ether in Wei.
     function onlineApplicationForCitizenship(uint256 _citizenNumber)
@@ -70,47 +72,73 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
             msg.value >= citizenshipStampCostInWei * _citizenNumber,
             "ser, the state machine needs oil"
         );
-        _safeTransferFrom(this.owner(), msg.sender, CITIZEN_NFT_ID, _citizenNumber,"");
+        _safeTransferFrom(
+            this.owner(),
+            msg.sender,
+            CITIZEN_NFT_ID,
+            _citizenNumber,
+            ""
+        );
     }
-    function issueNewCitizenships(address _to, uint256 _citizenType, uint256 _numberOfCitizens) public onlyOwner {
-        if (_citizenType == 42){
-            mintedCitizensCounter = mintedCitizensCounter.add(_numberOfCitizens);
-        }
-        else if ( _citizenType == 69 ) {
-            mintedFoundingCitizensCounter = mintedFoundingCitizensCounter.add(_numberOfCitizens);
-        }
-        else if ( _citizenType == 7 ) {
-            mintedFirstCitizensCounter = mintedFirstCitizensCounter.add(_numberOfCitizens);
-        }
-        else {
+
+    function issueNewCitizenships(
+        address _to,
+        uint256 _citizenType,
+        uint256 _numberOfCitizens
+    ) public onlyOwner {
+        if (_citizenType == 42) {
+            mintedCitizensCounter = mintedCitizensCounter.add(
+                _numberOfCitizens
+            );
+        } else if (_citizenType == 69) {
+            mintedFoundingCitizensCounter = mintedFoundingCitizensCounter.add(
+                _numberOfCitizens
+            );
+        } else if (_citizenType == 7) {
+            mintedFirstCitizensCounter = mintedFirstCitizensCounter.add(
+                _numberOfCitizens
+            );
+        } else {
             revert(Errors.invalidCitizenshipId);
         }
         _mint(_to, _citizenType, _numberOfCitizens, "");
     }
+
     function initialCitizenship() external onlyOwner {
-        issueNewCitizenships(msg.sender, CITIZEN_NFT_ID, availableHousingForCitizens);
+        issueNewCitizenships(
+            msg.sender,
+            CITIZEN_NFT_ID,
+            availableHousingForCitizens
+        );
         issueNewCitizenships(msg.sender, FOUNDING_NFT_ID, museumSize);
-        issueNewCitizenships(msg.sender, FIRST_NFT_ID, firstCitizensAmongstEquals);
+        issueNewCitizenships(
+            msg.sender,
+            FIRST_NFT_ID,
+            firstCitizensAmongstEquals
+        );
     }
+
     /// @notice Change the cost for minting a new regular Citizen NFT
     /// Can only be called by the owner of the smart contract.
     function legislateCostOfEntry(uint256 _stampCost) external onlyOwner {
         citizenshipStampCostInWei = _stampCost;
         emit CitizenLegislatureChanged("stampCost", _stampCost);
     }
+
     /// @notice Mint new Citizen NFTs to the owner of the smart contract
     /// Can only be called by the owner of the smart contract.
-    function buildHousing(uint256 _newCitizens)
-        external
-        onlyOwner
-    {
+    function buildHousing(uint256 _newCitizens) external onlyOwner {
         emit CitizenLegislatureChanged("Minted new citizen NFTs", _newCitizens);
         issueNewCitizenships(msg.sender, CITIZEN_NFT_ID, _newCitizens);
     }
+
     /// @notice  Mint new Citizen NFTs to the owner of the smart contract
     /// Can only be called by the owner of the smart contract.
     function rewriteHistory(uint256 _newCitizens) external onlyOwner {
-        emit CitizenLegislatureChanged("Minted new Founding Citizen NFTs", _newCitizens);
+        emit CitizenLegislatureChanged(
+            "Minted new Founding Citizen NFTs",
+            _newCitizens
+        );
         issueNewCitizenships(msg.sender, FOUNDING_NFT_ID, _newCitizens);
     }
 
@@ -128,7 +156,8 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
     function inquireAboutHistory() external view returns (uint256) {
         return mintedFoundingCitizensCounter;
     }
-     /// @notice Withdraw the funds locked in the smart contract,
+
+    /// @notice Withdraw the funds locked in the smart contract,
     /// originating from the minting of new regular Citizen NFTs.
     /// Can only becalled by the owner of the smart contract.
     function raidTheCoffers() external onlyOwner {
@@ -136,6 +165,7 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
         (bool success, ) = owner().call{value: amount}("");
         require(success, "Anti-corruption agencies stopped the transfer");
     }
+
     fallback() external payable {
         emit LogEthDeposit(msg.sender);
     }
@@ -143,6 +173,7 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
     receive() external payable {
         emit LogEthDeposit(msg.sender);
     }
+
     /// the citizen NFT has different metadata.
     function uri(uint256 _citizenshipId)
         public
@@ -152,13 +183,13 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
     {
         string memory imageHash;
         string memory citizenship;
-        if ( _citizenshipId== 42) {
+        if (_citizenshipId == 42) {
             imageHash = "QmRRnuHVwhoYEHsTxzMcGdrCfthKTS65gnfUqDZkv6kbza";
             citizenship = "CityDAO Citizen";
-        } else if ( _citizenshipId == 69) {
+        } else if (_citizenshipId == 69) {
             imageHash = "QmSrKL6fhPYU6BbYrV97AJm3aM6naGWZK95QntXXZuGQrF";
             citizenship = "CityDAO Founding Citizen";
-        } else if ( _citizenshipId == 7) {
+        } else if (_citizenshipId == 7) {
             imageHash = "Qmb6VmYiktfvNX3YkLosYwjUM82PcEkr2irZ4PWheYiG2b";
             citizenship = "CityDAO First Citizen";
         } else {
@@ -187,30 +218,60 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
     /// @dev Define the fee for the token specify
     /// @param tokenId uint256 token ID to specify
     /// @param recipient address account that receives the royalties
-    function setTokenRoyalty(uint256 tokenId, address recipient, uint16 bps) public override onlyOwner {
+    function setTokenRoyalty(
+        uint256 tokenId,
+        address recipient,
+        uint16 bps
+    ) public override onlyOwner {
         _tokenRoyalties[tokenId] = TokenRoyalty(recipient, bps);
         emit TokenRoyaltySet(tokenId, recipient, bps);
     }
+
     /// @dev Define the default amount of fee and receive address
     /// @param recipient address ID account receive royalty
     /// @param bps uint256 amount of fee (1% == 100)
-    function setDefaultRoyalty(address recipient, uint16 bps) public override onlyOwner {
+    function setDefaultRoyalty(address recipient, uint16 bps)
+        public
+        override
+        onlyOwner
+    {
         defaultRoyalty = TokenRoyalty(recipient, bps);
         emit DefaultRoyaltySet(recipient, bps);
     }
 
-    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC1155) returns (bool) {
-        return interfaceId == type(IEIP2981).interfaceId || interfaceId == type(IERC1155WithRoyalty).interfaceId || super.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC1155)
+        returns (bool)
+    {
+        return
+            interfaceId == type(IEIP2981).interfaceId ||
+            interfaceId == type(IERC1155WithRoyalty).interfaceId ||
+            super.supportsInterface(interfaceId);
     }
+
     /// @dev Returns royalty info (address to send fee, and fee to send)
     /// @param tokenId uint256 ID of the token to display information
     /// @param value uint256 sold price
-    function royaltyInfo(uint256 tokenId, uint256 value) public override view returns (address, uint256) {
+    function royaltyInfo(uint256 tokenId, uint256 value)
+        public
+        view
+        override
+        returns (address, uint256)
+    {
         if (_tokenRoyalties[tokenId].recipient != address(0)) {
-            return (_tokenRoyalties[tokenId].recipient, value*_tokenRoyalties[tokenId].bps/10000);
+            return (
+                _tokenRoyalties[tokenId].recipient,
+                (value * _tokenRoyalties[tokenId].bps) / 10000
+            );
         }
         if (defaultRoyalty.recipient != address(0) && defaultRoyalty.bps != 0) {
-            return (defaultRoyalty.recipient, value*defaultRoyalty.bps/10000);
+            return (
+                defaultRoyalty.recipient,
+                (value * defaultRoyalty.bps) / 10000
+            );
         }
         return (address(0), 0);
     }

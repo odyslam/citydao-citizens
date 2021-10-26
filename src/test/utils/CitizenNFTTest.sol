@@ -15,13 +15,18 @@ contract User is ERC1155Holder, DSTest {
     constructor(CitizenNFT _citizenNFT) {
         citizenNFT = _citizenNFT;
     }
+
     function initialCitizenship() public {
         citizenNFT.initialCitizenship();
     }
-    function onlineApplicationForCitizenship(uint256 _citizenshipCost,uint256 _tokenNumber)
-        public
-    {
-        citizenNFT.onlineApplicationForCitizenship{value: _citizenshipCost * _tokenNumber }( _tokenNumber);
+
+    function onlineApplicationForCitizenship(
+        uint256 _citizenshipCost,
+        uint256 _tokenNumber
+    ) public {
+        citizenNFT.onlineApplicationForCitizenship{
+            value: _citizenshipCost * _tokenNumber
+        }(_tokenNumber);
     }
 
     function legislateCostOfEntry(uint256 _weiAmmount) public {
@@ -39,9 +44,15 @@ contract User is ERC1155Holder, DSTest {
     function raidTheCoffers() public {
         citizenNFT.raidTheCoffers();
     }
-    function setTokenRoyalty(uint256 _tokenId, address _recipient, uint16 _bps) public {
-        citizenNFT.setTokenRoyalty( _tokenId, _recipient, _bps);
+
+    function setTokenRoyalty(
+        uint256 _tokenId,
+        address _recipient,
+        uint16 _bps
+    ) public {
+        citizenNFT.setTokenRoyalty(_tokenId, _recipient, _bps);
     }
+
     receive() external payable {}
 }
 
@@ -60,12 +71,10 @@ contract CitizenTest is DSTest, ERC1155Holder {
     uint256 citizenNFTInternalId = 42;
     uint256 foundingCitizenNFTInternalId = 69;
     uint256 firstCitizenNFTInternalId = 7;
+
     function setUp() public virtual {
         defaultRoyaltyReceiver = address(this);
-        citizenNFT = new CitizenNFT(
-            defaultRoyaltyReceiver,
-            1000
-        );
+        citizenNFT = new CitizenNFT(defaultRoyaltyReceiver, 1000);
         bob = new User(citizenNFT);
         alice = new User(citizenNFT);
         odys = new User(citizenNFT);
