@@ -21,7 +21,7 @@ library Errors {
 /// @notice An ERC721 NFT that replaces the Citizen NFTs that are issued by the OpenSea Storefront Smart contract.
 /// This smart contract enables users to either mint a new CitizenNFT or
 /// "transfer" their Citizen NFTs from the OpenSea smart contract to this one.
-contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
+contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981, ReentrancyGuard {
     // We use safemath to avoid under and over flows
     using SafeMath for uint256;
     uint256 private availableHousingForCitizens = 10000;
@@ -40,7 +40,7 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
     event NewCitizen(address, uint256, uint256);
     event TokenRoyaltySet(uint256 tokenId, address recipient, uint16 bps);
     event DefaultRoyaltySet(address recipient, uint16 bps);
-    // erc1155
+    // ERC1155
     uint256 private mintedCitizensCounter = 0;
     uint256 private mintedFoundingCitizensCounter = 0;
     uint256 private mintedFirstCitizensCounter = 0;
@@ -83,6 +83,7 @@ contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
     function onlineApplicationForCitizenship(uint256 _citizenNumber)
         public
         payable
+        nonReentrant
     {
         require(
             msg.value >= citizenshipStampCostInWei * _citizenNumber,
