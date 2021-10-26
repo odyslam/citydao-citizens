@@ -12,6 +12,7 @@ import "ds-test/test.sol";
 import "./IEIP2981.sol";
 import "./IERC1155WithRoyalty.sol";
 
+/// @notice Error library for centralised error messaging
 library Errors {
     string constant invalidCitizenshipId = "Unknown Citizen NFT ID";
 }
