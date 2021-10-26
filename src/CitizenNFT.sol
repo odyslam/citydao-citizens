@@ -9,6 +9,8 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "./Base64.sol";
 import "ds-test/test.sol";
+import "./IEIP2981.sol";
+import "./IERC1155WithRoyalty.sol";
 
 library Errors {
     string constant invalidCitizenshipId = "Unknown Citizen NFT ID";
@@ -19,10 +21,9 @@ library Errors {
 /// @notice An ERC721 NFT that replaces the Citizen NFTs that are issued by the OpenSea Storefront Smart contract.
 /// This smart contract enables users to either mint a new CitizenNFT or
 /// "transfer" their Citizen NFTs from the OpenSea smart contract to this one.
-contract CitizenNFT is ERC1155, Ownable {
+contract CitizenNFT is ERC1155, Ownable, IERC1155WithRoyalty, IEIP2981 {
     // We use safemath to avoid under and over flows
     using SafeMath for uint256;
-
     uint256 private availableHousingForCitizens = 10000;
     uint256 private museumSize = 50;
     uint256 private constant firstCitizensAmongstEquals = 1;
@@ -37,18 +38,27 @@ contract CitizenNFT is ERC1155, Ownable {
     event LogEthDeposit(address);
     event CitizenLegislatureChanged(string, uint256);
     event NewCitizen(address, uint256, uint256);
+    event TokenRoyaltySet(uint256 tokenId, address recipient, uint16 bps);
+    event DefaultRoyaltySet(address recipient, uint16 bps);
     // erc1155
     uint256 private mintedCitizensCounter = 0;
     uint256 private mintedFoundingCitizensCounter = 0;
     uint256 private mintedFirstCitizensCounter = 0;
+    // EIP2981
+    struct TokenRoyalty {
+        address recipient;
+        uint16 bps;
+    }
+    TokenRoyalty public defaultRoyalty;
+    mapping(uint256 => TokenRoyalty) private _tokenRoyalties;
     /// @notice Initialise CitizenNFT smart contract with the appropriate address and ItemIds of the
     /// Open Sea shared storefront smart contract and the Citizen NFTs that are locked in it.
     constructor(
-        address _forbiddenAddress,
-        uint256 _jailedCitizens,
-        uint256 _citizensFacingGuillotine,
-        uint256 _beheadedCitizen
-    ) Ownable() ERC1155("") {}
+        address _royaltyRecipient,
+        uint16 _royaltyBPS
+    ) Ownable() ERC1155("") {
+        defaultRoyalty = TokenRoyalty(_royaltyRecipient, _royaltyBPS);
+    }
      /// @notice Transfer regular Citizen NFTs from the CityDAO owner address to the user.
     /// @param _citizenNumber How many citizenNFTs will be transfered.
     /// The user must include in the transaction, the appropriate number of ether in Wei.
@@ -172,5 +182,36 @@ contract CitizenNFT is ERC1155, Ownable {
             )
         );
         return string(abi.encodePacked("data:application/json;base64,", json));
+    }
+
+    /// @dev Define the fee for the token specify
+    /// @param tokenId uint256 token ID to specify
+    /// @param recipient address account that receives the royalties
+    function setTokenRoyalty(uint256 tokenId, address recipient, uint16 bps) public override onlyOwner {
+        _tokenRoyalties[tokenId] = TokenRoyalty(recipient, bps);
+        emit TokenRoyaltySet(tokenId, recipient, bps);
+    }
+    /// @dev Define the default amount of fee and receive address
+    /// @param recipient address ID account receive royalty
+    /// @param bps uint256 amount of fee (1% == 100)
+    function setDefaultRoyalty(address recipient, uint16 bps) public override onlyOwner {
+        defaultRoyalty = TokenRoyalty(recipient, bps);
+        emit DefaultRoyaltySet(recipient, bps);
+    }
+
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC1155) returns (bool) {
+        return interfaceId == type(IEIP2981).interfaceId || interfaceId == type(IERC1155WithRoyalty).interfaceId || super.supportsInterface(interfaceId);
+    }
+    /// @dev Returns royalty info (address to send fee, and fee to send)
+    /// @param tokenId uint256 ID of the token to display information
+    /// @param value uint256 sold price
+    function royaltyInfo(uint256 tokenId, uint256 value) public override view returns (address, uint256) {
+        if (_tokenRoyalties[tokenId].recipient != address(0)) {
+            return (_tokenRoyalties[tokenId].recipient, value*_tokenRoyalties[tokenId].bps/10000);
+        }
+        if (defaultRoyalty.recipient != address(0) && defaultRoyalty.bps != 0) {
+            return (defaultRoyalty.recipient, value*defaultRoyalty.bps/10000);
+        }
+        return (address(0), 0);
     }
 }

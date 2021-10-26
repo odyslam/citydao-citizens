@@ -72,3 +72,9 @@ contract Legislate is CitizenTest {
         assertEq(address(odys).balance, tokenPrice * 2);
     }
 }
+
+contract Royalties is CitizenTest {
+
+    function testDefaultRoyalties() public {
+        assertEq(
+    }
