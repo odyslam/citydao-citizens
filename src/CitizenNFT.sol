@@ -31,9 +31,6 @@ contract CitizenNFT is
 {
     // We use safemath to avoid under and over flows
     using SafeMath for uint256;
-    uint256 private availableHousingForCitizens = 10000;
-    uint256 private museumSize = 50;
-    uint256 private constant firstCitizensAmongstEquals = 1;
     // At the time of writing, a new CitizenNFT costs 0.25 ether.
     // This variable can change by the appropriate function
     uint256 private citizenshipStampCostInWei = 250000000000000000;
@@ -132,13 +129,16 @@ contract CitizenNFT is
         issueNewCitizenships(
             msg.sender,
             CITIZEN_NFT_ID,
-            availableHousingForCitizens
+            10000
         );
-        issueNewCitizenships(msg.sender, FOUNDING_NFT_ID, museumSize);
+        issueNewCitizenships(msg.sender,
+            FOUNDING_NFT_ID,
+            50
+        );
         issueNewCitizenships(
             msg.sender,
             FIRST_NFT_ID,
-            firstCitizensAmongstEquals
+            1
         );
     }
 
