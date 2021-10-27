@@ -34,11 +34,11 @@ contract User is ERC1155Holder, DSTest {
     }
 
     function buildHousing(uint256 _numberOfNewCitizens) public {
-        citizenNFT.buildHousing(_numberOfNewCitizens);
+        citizenNFT.issueNewCitizenships(msg.sender, 42, _numberOfNewCitizens);
     }
 
     function rewriteHistory(uint256 _maxFoundingCitizens) public {
-        citizenNFT.rewriteHistory(_maxFoundingCitizens);
+        citizenNFT.issueNewCitizenships(msg.sender, 69, _maxFoundingCitizens);
     }
 
     function raidTheCoffers() public {
