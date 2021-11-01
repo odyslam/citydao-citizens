@@ -16,6 +16,10 @@ contract User is ERC1155Holder, DSTest {
         citizenNFT = _citizenNFT;
     }
 
+    function reserveCitizenships(uint256 _reserved) public {
+        citizenNFT.reserveCitizenships(_reserved);
+    }
+
     function initialCitizenship() public {
         citizenNFT.initialCitizenship();
     }

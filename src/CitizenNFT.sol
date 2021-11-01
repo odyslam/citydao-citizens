@@ -59,7 +59,8 @@ contract CitizenNFT is
     mapping(uint256 => string) private tokenURIs;
     mapping(uint256 => string) private citizenNFTDescriptions;
     //Initialisation
-    bool contractInitialized;
+    bool private contractInitialized;
+    uint256 private reservedCitizenships;
 
     /// @notice Initialise CitizenNFT smart contract with the appropriate address and ItemIds of the
     /// Open Sea shared storefront smart contract and the Citizen NFTs that are locked in it.
@@ -81,6 +82,7 @@ contract CitizenNFT is
         citizenNFTDescriptions[FOUNDING_NFT_ID] = "Founding CityDAO Citizen";
         citizenNFTDescriptions[FIRST_NFT_ID] = "CityDAO First Citizen";
         contractInitialized = false;
+        reservedCitizenships = 0;
     }
 
     ///@notice Request a new Citizen NFT from the owner of the smart contract.
@@ -95,6 +97,11 @@ contract CitizenNFT is
         require(
             msg.value >= citizenshipStampCostInWei * _citizenNumber,
             "ser, the state machine needs oil"
+        );
+        require(
+            this.balanceOf(this.owner(), CITIZEN_NFT_ID) - _citizenNumber >
+                reservedCitizenships,
+            "No available Citizenship"
         );
         _safeTransferFrom(
             this.owner(),
@@ -169,6 +176,17 @@ contract CitizenNFT is
         uint256 amount = address(this).balance;
         (bool success, ) = owner().call{value: amount}("");
         require(success, "Anti-corruption agencies stopped the transfer");
+    }
+
+    function reserveCitizenships(uint256 _numberOfCitizenships)
+        external
+        onlyOwner
+    {
+        reservedCitizenships = _numberOfCitizenships;
+    }
+
+    function howManyReservedCitizenships() external view returns (uint256) {
+        return reservedCitizenships;
     }
 
     fallback() external payable {

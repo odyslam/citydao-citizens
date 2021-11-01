@@ -98,6 +98,31 @@ contract Legislate is CitizenTest {
     function testFailtCallInitAgain() public {
         odys.initialCitizenship();
     }
+
+    function testFailReserveCitizenships() public {
+        odys.reserveCitizenships(1000);
+        payable(address(bob)).transfer(5000 ether);
+        uint256 tokenPrice = 250000000000000000;
+        bob.onlineApplicationForCitizenship(tokenPrice, 9000);
+        emit log_uint(
+            citizenNFT.balanceOf(address(odys), citizenNFTInternalId)
+        );
+    }
+
+    function testReserveCitizenships() public {
+        odys.reserveCitizenships(500);
+        payable(address(bob)).transfer(5000 ether);
+        uint256 tokenPrice = 250000000000000000;
+        bob.onlineApplicationForCitizenship(tokenPrice, 9000);
+        assertEq(
+            citizenNFT.balanceOf(address(bob), citizenNFTInternalId),
+            9000
+        );
+        assertEq(
+            citizenNFT.balanceOf(address(odys), citizenNFTInternalId),
+            1000
+        );
+    }
 }
 
 contract Royalties is CitizenTest {
