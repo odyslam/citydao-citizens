@@ -58,6 +58,9 @@ contract CitizenNFT is
     // NFT metadata
     mapping(uint256 => string) private tokenURIs;
     mapping(uint256 => string) private citizenNFTDescriptions;
+    //Initialisation
+    bool private contractInitialized;
+    uint256 private reservedCitizenships;
 
     /// @notice Initialise CitizenNFT smart contract with the appropriate address and ItemIds of the
     /// Open Sea shared storefront smart contract and the Citizen NFTs that are locked in it.
@@ -78,11 +81,14 @@ contract CitizenNFT is
         citizenNFTDescriptions[CITIZEN_NFT_ID] = "CityDAO Citizen";
         citizenNFTDescriptions[FOUNDING_NFT_ID] = "Founding CityDAO Citizen";
         citizenNFTDescriptions[FIRST_NFT_ID] = "CityDAO First Citizen";
+        contractInitialized = false;
+        reservedCitizenships = 0;
     }
 
-    /// @notice Transfer regular Citizen NFTs from the CityDAO owner address to the user.
-    /// @param _citizenNumber How many citizenNFTs will be transfered.
-    /// The user must include in the transaction, the appropriate number of ether in Wei.
+    ///@notice Request a new Citizen NFT from the owner of the smart contract.
+    /// You can request any number of NFTs and pay `citizenshipStampCostInWei` per NFT
+    ///@param _citizenNumber Number of Citizen NFTs to request
+
     function onlineApplicationForCitizenship(uint256 _citizenNumber)
         public
         payable
@@ -91,6 +97,11 @@ contract CitizenNFT is
         require(
             msg.value >= citizenshipStampCostInWei * _citizenNumber,
             "ser, the state machine needs oil"
+        );
+        require(
+            this.balanceOf(this.owner(), CITIZEN_NFT_ID) - _citizenNumber >
+                reservedCitizenships,
+            "No available Citizenship"
         );
         _safeTransferFrom(
             this.owner(),
@@ -102,6 +113,9 @@ contract CitizenNFT is
     }
 
     ///@notice Mint new citizenNFTs to an address, usually that of CityDAO.
+    ///@param _to Address to where the NFTs must be minted
+    ///@param _citizenType ID for the Citizen NFT (42 for regular, 69 for founding, 7 for first)
+    ///@param _numberOfCitizens The number of Citizen NFTs to be minted
     function issueNewCitizenships(
         address _to,
         uint256 _citizenType,
@@ -126,20 +140,11 @@ contract CitizenNFT is
     }
 
     function initialCitizenship() external onlyOwner {
-        issueNewCitizenships(
-            msg.sender,
-            CITIZEN_NFT_ID,
-            10000
-        );
-        issueNewCitizenships(msg.sender,
-            FOUNDING_NFT_ID,
-            50
-        );
-        issueNewCitizenships(
-            msg.sender,
-            FIRST_NFT_ID,
-            1
-        );
+        require(contractInitialized == false, "contract initialized already");
+        issueNewCitizenships(msg.sender, CITIZEN_NFT_ID, 10000);
+        issueNewCitizenships(msg.sender, FOUNDING_NFT_ID, 50);
+        issueNewCitizenships(msg.sender, FIRST_NFT_ID, 1);
+        contractInitialized = true;
     }
 
     /// @notice Change the cost for minting a new regular Citizen NFT
@@ -147,23 +152,6 @@ contract CitizenNFT is
     function legislateCostOfEntry(uint256 _stampCost) external onlyOwner {
         citizenshipStampCostInWei = _stampCost;
         emit CitizenLegislatureChanged("stampCost", _stampCost);
-    }
-
-    /// @notice Mint new Citizen NFTs to the owner of the smart contract
-    /// Can only be called by the owner of the smart contract.
-    function buildHousing(uint256 _newCitizens) external onlyOwner {
-        emit CitizenLegislatureChanged("Minted new citizen NFTs", _newCitizens);
-        issueNewCitizenships(msg.sender, CITIZEN_NFT_ID, _newCitizens);
-    }
-
-    /// @notice  Mint new Citizen NFTs to the owner of the smart contract
-    /// Can only be called by the owner of the smart contract.
-    function rewriteHistory(uint256 _newCitizens) external onlyOwner {
-        emit CitizenLegislatureChanged(
-            "Minted new Founding Citizen NFTs",
-            _newCitizens
-        );
-        issueNewCitizenships(msg.sender, FOUNDING_NFT_ID, _newCitizens);
     }
 
     /// @notice Return the current cost of minting a new regular Citizen NFT.
@@ -188,6 +176,17 @@ contract CitizenNFT is
         uint256 amount = address(this).balance;
         (bool success, ) = owner().call{value: amount}("");
         require(success, "Anti-corruption agencies stopped the transfer");
+    }
+
+    function reserveCitizenships(uint256 _numberOfCitizenships)
+        external
+        onlyOwner
+    {
+        reservedCitizenships = _numberOfCitizenships;
+    }
+
+    function howManyReservedCitizenships() external view returns (uint256) {
+        return reservedCitizenships;
     }
 
     fallback() external payable {
