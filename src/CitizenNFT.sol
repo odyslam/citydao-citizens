@@ -58,6 +58,8 @@ contract CitizenNFT is
     // NFT metadata
     mapping(uint256 => string) private tokenURIs;
     mapping(uint256 => string) private citizenNFTDescriptions;
+    //Initialisation
+    bool contractInitialized;
 
     /// @notice Initialise CitizenNFT smart contract with the appropriate address and ItemIds of the
     /// Open Sea shared storefront smart contract and the Citizen NFTs that are locked in it.
@@ -78,6 +80,7 @@ contract CitizenNFT is
         citizenNFTDescriptions[CITIZEN_NFT_ID] = "CityDAO Citizen";
         citizenNFTDescriptions[FOUNDING_NFT_ID] = "Founding CityDAO Citizen";
         citizenNFTDescriptions[FIRST_NFT_ID] = "CityDAO First Citizen";
+        contractInitialized = false;
     }
 
     ///@notice Request a new Citizen NFT from the owner of the smart contract.
@@ -130,9 +133,11 @@ contract CitizenNFT is
     }
 
     function initialCitizenship() external onlyOwner {
+        require(contractInitialized == false, "contract initialized already");
         issueNewCitizenships(msg.sender, CITIZEN_NFT_ID, 10000);
         issueNewCitizenships(msg.sender, FOUNDING_NFT_ID, 50);
         issueNewCitizenships(msg.sender, FIRST_NFT_ID, 1);
+        contractInitialized = true;
     }
 
     /// @notice Change the cost for minting a new regular Citizen NFT

@@ -94,6 +94,9 @@ contract Legislate is CitizenTest {
         odys.raidTheCoffers();
         assertEq(address(odys).balance, tokenPrice * 2);
     }
+    function testFailtCallInitAgain() public {
+        odys.initialCitizenship();
+    }
 }
 
 contract Royalties is CitizenTest {
