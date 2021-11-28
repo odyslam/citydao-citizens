@@ -9,6 +9,11 @@ There are 3 types of CityDAO citizens:
 - Founding Citizens
 - First Citizen
 
+## Deployment Status
+
+Status: **Deployed** at address [0x7eef591a6cc0403b9652e98e88476fe1bf31ddeb](https://etherscan.io/address/0x7eef591a6cc0403b9652e98e88476fe1bf31ddeb) with block [
+13533149](https://etherscan.io/tx/0x7eb55d0f6ffb7cb7b1d638c136a3f166b27a20c8061653e6b75b298eb6dd9b89)
+
 ## Implementation Notes
 
 - ERC1155 is used to represent tokens
